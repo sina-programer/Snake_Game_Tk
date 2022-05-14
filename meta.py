@@ -23,6 +23,26 @@ links = {
     'github': 'https://github.com/sina-programer'
 }
 
+unwanted_bindings = (
+    'cut',
+    'delete',
+    'edit_cell',
+    'edit_header',
+    'right_click_popup_menu',
+    'rc_insert_column',
+    'rc_delete_column',
+    'rc_insert_row',
+    'rc_delete_row',
+    'column_drag_and_drop',
+    'row_drag_and_drop',
+    'double_click_row_resize',
+    'row_height_resize',
+    'column_height_resize',
+    'row_width_resize',
+    'double_click_column_resize',
+    'column_width_resize'
+)
+
 default_level = 2
 default_username = 'Player_1'
 default_colors = {

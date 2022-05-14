@@ -49,21 +49,6 @@ def move(canvas, item, x, y):
     canvas.move(item, x, y)
 
 
-def show_records(user):
-    """ show best scores for each level from <user> """
-
-    result = f'Your records ({user.username}): \n\n'
-    for level in range(1, 4):
-        try:
-            score = Score.select().where(Score.level == level, Score.user == user).order_by(Score.score.desc()).get()
-            result += f'     Level {level}:  {score.score}\n'
-
-        except Exception:
-            result += f'     Level {level}:  No record\n'
-
-    messagebox.showinfo(meta.title, result)
-
-
 class App(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -253,7 +238,7 @@ class App(tk.Frame):
 
         scores_menu.add_command(label='Best Scores', command=lambda: dialogs.BestScoresDialog(self))
         scores_menu.add_command(label='My Scores', command=lambda: dialogs.MyScoresDialog(self))
-        scores_menu.add_command(label='Records', command=lambda: show_records(self.user))
+        scores_menu.add_command(label='Records', command=lambda: dialogs.RecordsDialog(self))
 
         main_menu.add_cascade(label='Account Setting', menu=account_menu)
         main_menu.add_cascade(label='Scores', menu=scores_menu)

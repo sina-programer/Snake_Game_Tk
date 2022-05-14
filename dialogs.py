@@ -2,6 +2,7 @@ from tkinter import simpledialog, colorchooser, messagebox
 import tkinter as tk
 import webbrowser
 import hashlib
+import tksheet
 
 from database import User, Score, Color
 import meta
@@ -255,26 +256,25 @@ class SigninDialog(BaseDialog):
 
 class BestScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Best scores', app)
+        super().__init__(app.master, 'Best Scores', app)
 
     def body(self, frame):
-        list_box = tk.Listbox(frame)
-        list_box.pack(side=tk.LEFT)
-        scrollbar = tk.Scrollbar(frame)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        sheet = tksheet.Sheet(self, headers=['User', 'Score', 'Date'])
+        sheet.pack(pady=5)
+        sheet.align('center')
+        sheet.hide(canvas='x_scrollbar')
 
-        for counter, score in enumerate(Score.select().where(
-                Score.level == self.app.level.get()).order_by(Score.score.desc()), 1):
+        for counter, score in enumerate(Score.select().where(Score.level == self.app.level.get()).order_by(Score.score.desc()), 1):
+            sheet.insert_row([score.user.username, score.score, score.datetime.date()])
 
-            list_box.insert(tk.END, f' {counter:2}_ {score.user.username}: {score.score:2}')
-
-            if counter > meta.best_scores_limit:
+            if counter >= meta.best_scores_limit:
                 break
 
-        list_box.configure(yscrollcommand=scrollbar.set)
-        scrollbar.configure(command=list_box.yview)
+        sheet.enable_bindings()
+        sheet.disable_bindings(meta.unwanted_bindings)
 
         self.resizable(False, False)
+        self.geometry('440x260')
         if meta.is_windows:
             winsound.MessageBeep()
 
@@ -283,26 +283,63 @@ class BestScoresDialog(BaseDialog):
 
 class MyScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'My scores', app)
+        super().__init__(app.master, f'My Scores ({app.user.username})', app)
 
     def body(self, frame):
-        list_box = tk.Listbox(frame)
-        list_box.pack(side=tk.LEFT)
-        scrollbar = tk.Scrollbar(frame)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        sheet = tksheet.Sheet(self, headers=['Score', 'Date', 'Time'])
+        sheet.pack(pady=5)
+        sheet.align('center')
+        sheet.hide(canvas='x_scrollbar')
 
-        for counter, score in enumerate(Score.select().where(
-                Score.level == self.app.level.get(), Score.user == self.app.user).order_by(Score.score.desc()), 1):
+        for score in Score.select().where(Score.level == self.app.level.get(),
+                                          Score.user == self.app.user).order_by(Score.score.desc()):
 
-            list_box.insert(tk.END, f' {counter:2}:   {score.score:2}')
+            sheet.insert_row([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
 
-            if counter > meta.best_scores_limit:
-                break
-
-        list_box.configure(yscrollcommand=scrollbar.set)
-        scrollbar.configure(command=list_box.yview)
+        sheet.enable_bindings()
+        sheet.disable_bindings(meta.unwanted_bindings)
 
         self.resizable(False, False)
+        self.geometry('440x260')
+        if meta.is_windows:
+            winsound.MessageBeep()
+
+        return frame
+
+
+class RecordsDialog(BaseDialog):
+    def __init__(self, app):
+        super().__init__(app.master, f'Records', app)
+
+    def body(self, frame):
+        sheet = tksheet.Sheet(frame, headers=['Level', 'Your record', 'Record'])
+        sheet.grid()
+        sheet.align('center')
+        sheet.hide(canvas='x_scrollbar')
+
+        for level in range(1, 4):
+            try:
+                record = Score.select().where(Score.level == level).order_by(Score.score.desc()).get()
+            except Exception:
+                record = None
+
+            try:
+                score = Score.select().where(Score.level == level,
+                                             Score.user == self.app.user).order_by(Score.score.desc()).get()
+            except Exception:
+                score = None
+
+            sheet.insert_row([
+                level,
+                score.score if score else '-',
+                record.score if record else '-'
+            ])
+
+        sheet.enable_bindings()
+        sheet.disable_bindings(meta.unwanted_bindings)
+
+        self.resizable(False, False)
+        self.geometry('400x100')
         if meta.is_windows:
             winsound.MessageBeep()
 
