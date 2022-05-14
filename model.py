@@ -122,7 +122,8 @@ class App(tk.Frame):
             Score.create(user=self.user, score=score,
                          level=self.level.get(), datetime=dt.datetime.now())
 
-        self.update_best_score()
+        if score > self.best_score.get():
+            self.best_score.set(score)
 
         self.energy.set(meta.base_energy)
         self.score.set(0)
@@ -133,7 +134,6 @@ class App(tk.Frame):
         self.user = user
         self.username_lbl.config(text=self.user.username)
         self.snake.change_user(self.user)  # change colors too
-        self.update_best_score()
         self.update_personalizations()
 
         if self.user == meta.default_user:
@@ -148,8 +148,7 @@ class App(tk.Frame):
 
     def update_best_score(self):
         try:
-            score = Score.select().where(Score.user == self.user, Score.level == self.level.get()
-                                         ).order_by(Score.score.desc()).get()
+            score = Score.select().where(Score.level == self.level.get()).order_by(Score.score.desc()).get()
             self.best_score.set(score.score)
 
         except:
