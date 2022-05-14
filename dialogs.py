@@ -332,7 +332,7 @@ class RecordsDialog(BaseDialog):
             sheet.insert_row([
                 level,
                 score.score if score else '-',
-                record.score if record else '-'
+                f'{record.score} ({record.user.username})' if record else '-'
             ])
 
         sheet.enable_bindings()
