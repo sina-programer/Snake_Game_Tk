@@ -1,5 +1,6 @@
 from tkinter import messagebox
 import tkinter as tk
+import datetime as dt
 import time
 
 from database import User, Score, Color
@@ -133,7 +134,8 @@ class App(tk.Frame):
 
     def restart(self):
         if score := self.score.get():  # auto save score when change level meanwhile game loop
-            Score.create(user=self.user, score=score, level=self.level.get())
+            Score.create(user=self.user, score=score,
+                         level=self.level.get(), datetime=dt.datetime.now())
 
         self.update_best_score()
 
@@ -216,11 +218,11 @@ class App(tk.Frame):
 
     def game_loop(self):
         while True:
+            self.check_energy()
             self.check_eating_bait()
             self.check_head_and_body_collision()
             self.snake.move()
             self.bait.auto_move()
-            self.check_energy()
             self.update()
             time.sleep(self.delay)
 

@@ -17,6 +17,7 @@ class Score(pw.Model):
     user = pw.ForeignKeyField(User)
     score = pw.IntegerField()
     level = pw.IntegerField()
+    datetime = pw.DateTimeField()
 
     class Meta:
         database = db
