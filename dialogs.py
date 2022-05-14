@@ -262,11 +262,39 @@ class BestScoresDialog(BaseDialog):
         list_box.pack(side=tk.LEFT)
         scrollbar = tk.Scrollbar(frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        counter = 1
 
-        for score in Score.select().where(Score.level == self.app.level.get()).order_by(Score.score.desc()):
+        for counter, score in enumerate(Score.select().where(
+                Score.level == self.app.level.get()).order_by(Score.score.desc()), 1):
+
             list_box.insert(tk.END, f' {counter:2}_ {score.user.username}: {score.score:2}')
-            counter += 1
+
+            if counter > meta.best_scores_limit:
+                break
+
+        list_box.configure(yscrollcommand=scrollbar.set)
+        scrollbar.configure(command=list_box.yview)
+
+        self.resizable(False, False)
+        if meta.is_windows:
+            winsound.MessageBeep()
+
+        return frame
+
+
+class MyScoresDialog(BaseDialog):
+    def __init__(self, app):
+        super().__init__(app.master, 'My scores', app)
+
+    def body(self, frame):
+        list_box = tk.Listbox(frame)
+        list_box.pack(side=tk.LEFT)
+        scrollbar = tk.Scrollbar(frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        for counter, score in enumerate(Score.select().where(
+                Score.level == self.app.level.get(), Score.user == self.app.user).order_by(Score.score.desc()), 1):
+
+            list_box.insert(tk.END, f' {counter:2}:   {score.score:2}')
 
             if counter > meta.best_scores_limit:
                 break

@@ -228,15 +228,19 @@ class App(tk.Frame):
 
     def init_menu(self):
         main_menu = tk.Menu(self.master)
+        scores_menu = tk.Menu(main_menu, tearoff=False)
         account_menu = tk.Menu(main_menu, tearoff=False)
         manage_menu = tk.Menu(account_menu, tearoff=False)
 
         self.menus['main'] = main_menu
+        self.menus['scores'] = scores_menu
         self.menus['account'] = account_menu
         self.menus['manage'] = manage_menu
 
-        account_menu.add_command(label='Sign in', command=lambda: dialogs.SigninDialog(self))
-        account_menu.add_command(label='Sign up', command=lambda: dialogs.SignupDialog(self))
+        self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
+        self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
+        account_menu.add_command(label='Sign in', command=lambda: dialogs.SigninDialog(self), accelerator="Ctrl+I")
+        account_menu.add_command(label='Sign up', command=lambda: dialogs.SignupDialog(self), accelerator="Ctrl+U")
         account_menu.add_separator()
         account_menu.add_cascade(label='Manage Account', menu=manage_menu)
 
@@ -247,8 +251,12 @@ class App(tk.Frame):
         manage_menu.add_command(label='Reset Scores', command=self.reset_scores)
         manage_menu.add_command(label='Delete Account', command=self.delete_account)
 
+        scores_menu.add_command(label='Best Scores', command=lambda: dialogs.BestScoresDialog(self))
+        scores_menu.add_command(label='My Scores', command=lambda: dialogs.MyScoresDialog(self))
+        scores_menu.add_command(label='Records', command=lambda: show_records(self.user))
+
         main_menu.add_cascade(label='Account Setting', menu=account_menu)
-        main_menu.add_command(label='Best Scores', command=lambda: dialogs.BestScoresDialog(self))
+        main_menu.add_cascade(label='Scores', menu=scores_menu)
         main_menu.add_command(label='Setting', command=lambda: dialogs.SettingDialog(self))
         main_menu.add_command(label='About us', command=lambda: dialogs.AboutDialog(self.master))
 
