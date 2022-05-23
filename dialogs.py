@@ -242,15 +242,18 @@ class SigninDialog(BaseDialog):
 
         user = User.get_or_none(username=username)
         if user:
-            if password == user.password or username == meta.default_username:
-                self.app.restart()
-                self.app.change_user(user)
+            if self.app.user != user:
+                if password == user.password or username == meta.default_username:
+                    self.app.restart()
+                    self.app.change_user(user)
 
-                self.destroy()
-                messagebox.showinfo(meta.title, 'You logged in successfully!')
+                    self.destroy()
+                    messagebox.showinfo(meta.title, 'You logged in successfully!')
 
+                else:
+                    messagebox.showwarning(meta.title, 'Your password is incorrect!')
             else:
-                messagebox.showwarning(meta.title, 'Your password is incorrect!')
+                messagebox.showinfo(meta.title, 'This is current user!')
         else:
             messagebox.showwarning(meta.title, 'Please enter a valid user!')
 
