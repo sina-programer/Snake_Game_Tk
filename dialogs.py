@@ -108,6 +108,7 @@ class ChangeUsernameDialog(BaseDialog):
                 if not User.get_or_none(username=new_username):
                     self.app.username_lbl.config(text=new_username)
                     User.update(username=new_username).where(User.username == self.app.user.username).execute()
+                    self.app.user.username = new_username
                     self.destroy()
                     messagebox.showinfo(meta.title, f'Your username changed from <{old_username}> to <{new_username}>')
 
@@ -272,7 +273,8 @@ class BestScoresDialog(BaseDialog):
         sheet.align('center')
         sheet.hide(canvas='x_scrollbar')
 
-        for counter, score in enumerate(Score.select().where(Score.level == self.app.level.get()).order_by(Score.score.desc()), 1):
+        scores = Score.select().where(Score.level == self.app.level.get()).order_by(Score.score.desc())
+        for counter, score in enumerate(scores, 1):
             sheet.insert_row([score.user.username, score.score, score.datetime.date()])
 
             if counter >= meta.best_scores_limit:
