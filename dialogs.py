@@ -69,6 +69,7 @@ class ChangePasswordDialog(BaseDialog):
                 if new_password == confirm_password:
                     new_password = hashlib.sha256(new_password.encode()).hexdigest()
                     User.update(password=new_password).where(User.username == self.app.user.username).execute()
+                    self.destroy()
                     messagebox.showinfo(meta.title, 'Your password changed successfully!')
 
                 else:
@@ -107,6 +108,7 @@ class ChangeUsernameDialog(BaseDialog):
                 if not User.get_or_none(username=new_username):
                     self.app.username_lbl.config(text=new_username)
                     User.update(username=new_username).where(User.username == self.app.user.username).execute()
+                    self.destroy()
                     messagebox.showinfo(meta.title, f'Your username changed from <{old_username}> to <{new_username}>')
 
                 else:
@@ -173,6 +175,7 @@ class SignupDialog(BaseDialog):
             for ctype, color in meta.default_colors.items():
                 Color.create(user=user, code=color, type=ctype)
 
+            self.destroy()
             messagebox.showinfo(meta.title, 'Your account created successfully! \nnow you most sign in')
 
         else:
@@ -242,6 +245,8 @@ class SigninDialog(BaseDialog):
             if password == user.password or username == meta.default_username:
                 self.app.restart()
                 self.app.change_user(user)
+
+                self.destroy()
                 messagebox.showinfo(meta.title, 'You logged in successfully!')
 
             else:
