@@ -32,7 +32,7 @@ class Color(pw.Model):
         database = db
 
 
-# Create tables
-not db.table_exists('User') and db.create_tables([User])
-not db.table_exists('Score') and db.create_tables([Score])
-not db.table_exists('Color') and db.create_tables([Color])
+TABLES = [User, Score, Color]
+
+for table in TABLES:  # Create tables
+    not db.table_exists(table.__name__) and db.create_tables([table])
