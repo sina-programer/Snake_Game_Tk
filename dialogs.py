@@ -373,17 +373,17 @@ class SettingDialog(BaseDialog):
         tk.Label(frame, text='Level:').grid(row=1, column=1)
         tk.Scale(frame, from_=1, to=3, variable=self.level_var, orient=tk.HORIZONTAL).grid(row=1, column=2, columnspan=3, pady=12)
 
-        tk.Label(frame, text='Snake Head Color:').grid(row=2, column=1, columnspan=3, pady=5)
+        tk.Label(frame, text='Snake Head Color:', state=self.state).grid(row=2, column=1, columnspan=3, pady=5)
         self.head_color_btn = tk.Button(frame, width=2, command=self.set_head_color, state=self.state,
                                         bg=Color.get(user=self.app.user, type='Head').code)
         self.head_color_btn.grid(row=2, column=4, pady=5)
 
-        tk.Label(frame, text='Snake Body Color:').grid(row=3, column=1, columnspan=3, pady=5)
+        tk.Label(frame, text='Snake Body Color:', state=self.state).grid(row=3, column=1, columnspan=3, pady=5)
         self.body_color_btn = tk.Button(frame, width=2, command=self.set_body_color, state=self.state,
                                         bg=Color.get(user=self.app.user, type='Body').code)
         self.body_color_btn.grid(row=3, column=4, pady=5)
 
-        tk.Label(frame, text='Background Color:').grid(row=4, column=1, columnspan=3, pady=5)
+        tk.Label(frame, text='Background Color:', state=self.state).grid(row=4, column=1, columnspan=3, pady=5)
         self.bg_color_btn = tk.Button(frame, width=2, command=self.set_bg_color, state=self.state,
                                       bg=Color.get(user=self.app.user, type='Background').code)
         self.bg_color_btn.grid(row=4, column=4, pady=5)
