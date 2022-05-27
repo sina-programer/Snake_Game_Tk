@@ -1,7 +1,9 @@
 import peewee as pw
 
+import meta
 
-db = pw.SqliteDatabase('database.db')
+
+db = pw.SqliteDatabase(meta.database_path)
 db.connect()
 
 

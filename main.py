@@ -1,8 +1,8 @@
 import tkinter as tk
 import os
 
-import model
 import meta
+import model
 
 
 if __name__ == "__main__":
