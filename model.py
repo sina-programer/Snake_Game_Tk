@@ -21,11 +21,16 @@ def get_geometry(root):
     return f"{meta.main_width}x{meta.main_height}+{start_width}+{start_height}"
 
 
-def check_collision(canvas, obj1, obj2):
+def check_collision(canvas, obj1, obj2, obj1_is_image=False, obj1_size=None, obj2_is_image=False, obj2_size=None):
     """ This func get two objects & check their collision """
 
     crd_a = canvas.coords(obj1)
     crd_b = canvas.coords(obj2)
+
+    if obj1_is_image:  # images' coords only consist center position
+        crd_a = get_coords(*crd_a, obj1_size)
+    if obj2_is_image:
+        crd_b = get_coords(*crd_b, obj2_size)
 
     if (crd_a[0] <= crd_b[0] < crd_a[2] or crd_a[0] < crd_b[2] <= crd_a[2]) and \
        (crd_a[1] <= crd_b[1] < crd_a[3] or crd_a[1] < crd_b[3] <= crd_a[3]):
@@ -34,17 +39,36 @@ def check_collision(canvas, obj1, obj2):
     return False
 
 
-def get_position(canvas, item):
+def get_position(canvas, item, is_image=False):
     """ return center position of item """
 
     coords = canvas.coords(item)
+
+    if is_image:
+        return coords[0], coords[1]
+
     return ((coords[2] - coords[0]) / 2) + coords[0], ((coords[3] - coords[1]) / 2) + coords[1]
 
 
-def move(canvas, item, x, y):
+def get_coords(x, y, size):
+    """ return coords of an object from center & size """
+
+    half_size = size / 2
+    coords = [
+        x - half_size,
+        y - half_size,
+        x + half_size,
+        y + half_size
+    ]
+
+    return coords
+
+
+def move(canvas, item, x, y, is_image=False):
     """ give an object, then first move to 0-0 after to x-y """
 
-    item_pos = get_position(canvas, item)
+    item_pos = get_position(canvas, item, is_image=is_image)
+
     canvas.move(item, -item_pos[0], -item_pos[1])
     canvas.move(item, x, y)
 
@@ -101,7 +125,7 @@ class App(tk.Frame):
         self.canvas = tk.Canvas(self, width=meta.frame_width, height=meta.frame_height,
                                 highlightthickness=1.5, highlightbackground='black')
         self.snake = Snake(self.user, self.canvas, size=16)
-        self.bait = Bait(self.canvas, size=16, score=30, timeout=60, color='green')
+        self.bait = Bait(self.canvas, size=32, score=30, timeout=60)
         self.set_level(meta.default_level)
         self.update_personalizations()
 
@@ -162,7 +186,7 @@ class App(tk.Frame):
                 break
 
     def check_eating_bait(self):
-        if check_collision(self.canvas, self.snake.head, self.bait.item):
+        if check_collision(self.canvas, self.snake.head, self.bait.item, obj2_is_image=True, obj2_size=self.bait.size):
             self.bait.move()
             self.snake.grow()
             self.energy.set(self.energy.get() + self.bait.score)
