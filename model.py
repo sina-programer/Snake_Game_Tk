@@ -224,6 +224,13 @@ class App(tk.Frame):
             self.destroy()
             messagebox.showinfo(meta.title, 'Your account deleted successfully!')
 
+    def check_new_bait_image(self):
+        score = self.score.get()
+        if score in meta.fruits.keys():
+            new_fruit = meta.fruits[score]
+            new_photo = tk.PhotoImage(file=meta.photos[new_fruit])
+            self.bait.add_photo(new_photo)
+
     def game_loop(self):
         while True:
             self.check_energy()
@@ -232,6 +239,7 @@ class App(tk.Frame):
             self.snake.move()
             self.bait.auto_move()
             self.update()
+            self.check_new_bait_image()
             time.sleep(self.delay)
 
     def init_menu(self):
