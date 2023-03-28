@@ -4,8 +4,7 @@ import datetime as dt
 import time
 
 from database import User, Score, Color
-from elements import Bait
-from snake import Snake
+from objects import Bait, Snake
 import dialogs
 import meta
 
