@@ -10,17 +10,6 @@ import dialogs
 import meta
 
 
-def get_geometry(root):
-    """ This function return a geometry to put app on center-center """
-
-    scr_width = int(root.winfo_screenwidth())
-    scr_height = int(root.winfo_screenheight())
-    start_width = int((scr_width / 2) - 250)
-    start_height = int((scr_height / 2) - 330)
-
-    return f"{meta.main_width}x{meta.main_height}+{start_width}+{start_height}"
-
-
 def check_collision(canvas, obj1, obj2):
     """ This func get two objects & check their collision """
 
