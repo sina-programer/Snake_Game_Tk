@@ -1,7 +1,7 @@
 import sys
 import os
 
-is_windows = sys.platform == 'win32'
+is_windows = (sys.platform == 'win32')
 secret_folder = os.path.expanduser(r'~\.SnakeTk')
 if not os.path.exists(secret_folder):
     os.mkdir(secret_folder)

@@ -7,8 +7,12 @@ import tksheet
 from database import User, Score, Color
 import meta
 
-if meta.is_windows:
-    import winsound
+
+def beep():
+    if meta.is_windows:
+        import winsound
+        winsound.MessageBeep()
+
 
 
 class BaseDialog(simpledialog.Dialog):
@@ -54,8 +58,7 @@ class ChangePasswordDialog(BaseDialog):
 
         self.geometry('270x160')
         self.resizable(False, False)
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -94,8 +97,7 @@ class ChangeUsernameDialog(BaseDialog):
 
         self.geometry('270x90')
         self.resizable(False, False)
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -161,8 +163,7 @@ class SignupDialog(BaseDialog):
 
         self.geometry('270x180')
         self.resizable(False, False)
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -231,8 +232,7 @@ class SigninDialog(BaseDialog):
 
         self.geometry('250x150')
         self.resizable(False, False)
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -285,8 +285,7 @@ class BestScoresDialog(BaseDialog):
 
         self.resizable(False, False)
         self.geometry('440x260')
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -311,8 +310,7 @@ class MyScoresDialog(BaseDialog):
 
         self.resizable(False, False)
         self.geometry('440x260')
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -350,8 +348,7 @@ class RecordsDialog(BaseDialog):
 
         self.resizable(False, False)
         self.geometry('400x100')
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -397,8 +394,7 @@ class SettingDialog(BaseDialog):
 
         self.geometry('200x240')
         self.resizable(False, False)
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
 
         return frame
 
@@ -435,8 +431,7 @@ class SettingDialog(BaseDialog):
 
 class AboutDialog(BaseDialog):
     def __init__(self, parent):
-        if meta.is_windows:
-            winsound.MessageBeep()
+        beep()
         super().__init__(parent, 'About us')
 
     def body(self, frame):
