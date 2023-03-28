@@ -7,7 +7,7 @@ if not os.path.exists(secret_folder):
     os.mkdir(secret_folder)
 
 title = 'Snake Game'
-icon_path = r'Files\icon.ico'
+icon_path = r'icon.ico'
 
 main_width = 540
 main_height = 610
@@ -29,24 +29,6 @@ links = {
     'github': 'https://github.com/sina-programer'
 }
 
-photos = {}
-images_folder = r"Files\imgs"
-for img in os.listdir(images_folder):
-    img_name, ext = os.path.splitext(img)
-    photos[img_name] = os.path.join(images_folder, img)
-
-fruits = {
-    # score: fruit
-    0: 'apple',
-    3: 'cherry',
-    5: 'grape',
-    10: 'watermelon',
-    20: 'peach',
-    30: 'melon',
-    40: 'pineapple',
-    50: 'hazelnut',
-    100: 'coconut'
-}
 
 unwanted_bindings = (
     'cut',
