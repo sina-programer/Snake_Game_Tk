@@ -1,9 +1,11 @@
 import peewee as pw
+import os
 
-import meta
 
+database_name = 'database.db'
+database_path = os.path.expanduser(rf'~\.SnakeTk\{database_name}')
 
-db = pw.SqliteDatabase(meta.database_path)
+db = pw.SqliteDatabase(database_path)
 db.connect()
 
 

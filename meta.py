@@ -1,6 +1,9 @@
 import sys
 import os
 
+from database import User, Color
+
+
 is_windows = (sys.platform == 'win32')
 secret_folder = os.path.expanduser(r'~\.SnakeTk')
 if not os.path.exists(secret_folder):
@@ -16,9 +19,6 @@ frame_height = 480
 
 base_energy = 200
 best_scores_limit = 20
-
-database_name = 'database.db'
-database_path = os.path.join(secret_folder, database_name)
 
 medium_font = ('Segoe ui', 15)
 large_font = ('Segoe ui', 20)
@@ -58,7 +58,6 @@ default_colors = {
     'Background': '#ADD8E6'
 }
 
-from database import User, Color  # for circular import error, put import here
 
 default_user, created = User.get_or_create(username=default_username, password='')
 if created:
