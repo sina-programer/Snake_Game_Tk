@@ -38,6 +38,18 @@ def get_position(canvas, item):
            ((coords[3] - coords[1]) / 2) + coords[1]
 
 
+def get_coords(x, y, size):
+    """ return coords of an object from center & size """
+
+    half_size = size / 2
+    return [
+        x - half_size,
+        y - half_size,
+        x + half_size,
+        y + half_size
+    ]
+
+
 def move(canvas, item, x, y):
     """ give an object, then first move to 0-0 after to x-y """
 
