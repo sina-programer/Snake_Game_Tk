@@ -1,7 +1,7 @@
 import sys
 import os
 
-from database import User, Config
+from database import User
 
 
 is_windows = (sys.platform == 'win32')
@@ -50,16 +50,19 @@ unwanted_bindings = (
     'column_width_resize'
 )
 
-default_level = 2
-default_username = 'Player_1'
-default_colors = {
-    'Head': '#000000',
-    'Body': '#A9A9A9',
-    'Background': '#ADD8E6'
+defaults = {
+    'username': 'Player-Default',
+    'password': '',
+    'configs': {
+        'Head': '#000000',
+        'Body': '#A9A9A9',
+        'Background': '#ADD8E6',
+        'Level': 2
+    }
 }
 
 
-default_user, created = User.get_or_create(username=default_username, password='')
-if created:
-    for ctype, color in default_colors.items():
-        Config.create(user=default_user, label=ctype, value=color)
+default_user = User.get_or_none(username=defaults['username'])
+if not default_user:
+    from model import create_user
+    default_user = create_user(username=defaults['username'], password=defaults['password'])

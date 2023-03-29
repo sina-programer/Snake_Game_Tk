@@ -9,6 +9,14 @@ import dialogs
 import meta
 
 
+def create_user(username, password):
+    user = User.create(username=username, password=password, signup_date=dt.datetime.now())
+    for label, value in meta.defaults['configs'].items():
+        Config.create(user=user, label=label, value=value)
+
+    return user
+
+
 def check_collision(canvas, obj1, obj2):
     """ This func get two objects & check their collision """
 
@@ -26,7 +34,8 @@ def get_position(canvas, item):
     """ return center position of item """
 
     coords = canvas.coords(item)
-    return ((coords[2] - coords[0]) / 2) + coords[0], ((coords[3] - coords[1]) / 2) + coords[1]
+    return ((coords[2] - coords[0]) / 2) + coords[0], \
+           ((coords[3] - coords[1]) / 2) + coords[1]
 
 
 def move(canvas, item, x, y):

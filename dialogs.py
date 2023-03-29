@@ -5,6 +5,7 @@ import hashlib
 import tksheet
 
 from database import User, Score, Config
+from model import create_user
 import meta
 
 
@@ -173,10 +174,7 @@ class SignupDialog(BaseDialog):
         password = hashlib.sha256(password.encode()).hexdigest()
 
         if not User.get_or_none(username=username):
-            user = User.create(username=username, password=password)
-            for ctype, color in meta.default_colors.items():
-                Config.create(user=user, label=ctype, value=color)
-
+            create_user(username=username, password=password)
             self.destroy()
             messagebox.showinfo(meta.title, 'Your account created successfully! \nnow you most sign in')
 
