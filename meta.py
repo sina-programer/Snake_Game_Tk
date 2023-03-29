@@ -1,7 +1,7 @@
 import sys
 import os
 
-from database import User, Color
+from database import User, Config
 
 
 is_windows = (sys.platform == 'win32')
@@ -62,4 +62,4 @@ default_colors = {
 default_user, created = User.get_or_create(username=default_username, password='')
 if created:
     for ctype, color in default_colors.items():
-        Color.create(user=default_user, code=color, type=ctype)
+        Config.create(user=default_user, label=ctype, value=color)

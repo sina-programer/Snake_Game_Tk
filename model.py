@@ -3,7 +3,7 @@ import tkinter as tk
 import datetime as dt
 import time
 
-from database import User, Score, Color
+from database import User, Score, Config
 from objects import Bait, Snake
 import dialogs
 import meta
@@ -130,9 +130,9 @@ class App(tk.Frame):
             self.menus['account'].entryconfig('Manage Account', state=tk.NORMAL)
 
     def update_personalizations(self):
-        self.canvas.config(bg=Color.get(user=self.user, type='Background').code)
-        self.snake.change_head_color(Color.get(user=self.user, type='Head').code)
-        self.snake.change_body_color(Color.get(user=self.user, type='Body').code)
+        self.canvas.config(bg=Config.fetch(user=self.user, label='Background'))
+        self.snake.change_head_color(Config.fetch(user=self.user, label='Head'))
+        self.snake.change_body_color(Config.fetch(user=self.user, label='Body'))
 
     def update_best_score(self):
         try:

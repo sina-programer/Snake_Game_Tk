@@ -2,7 +2,7 @@ import random
 import model
 import meta
 
-from database import Color
+from database import Config
 
 
 class Bait:
@@ -60,7 +60,7 @@ class Snake:
                                                  self.start_y - self.half_size,
                                                  self.start_x + self.half_size,
                                                  self.start_y + self.half_size,
-                                                 fill=Color.get(user=self.user, type='Head').code)
+                                                 fill=Config.fetch(user=self.user, label='Head'))
         self.aims = {
             'stop': None,
             'up': (0, -self.size),
@@ -93,7 +93,7 @@ class Snake:
                                          y - self.half_size,
                                          x + self.half_size,
                                          y + self.half_size,
-                                         fill=Color.get(user=self.user, type='Body').code)
+                                         fill=Config.fetch(user=self.user, label='Body'))
         )
 
     def reset(self):
@@ -103,7 +103,7 @@ class Snake:
                                                  self.start_y - self.half_size,
                                                  self.start_x + self.half_size,
                                                  self.start_y + self.half_size,
-                                                 fill=Color.get(user=self.user, type='Head').code)
+                                                 fill=Config.fetch(user=self.user, label='Head'))
         for body in self.body:
             self.canvas.delete(body)
         self.body = []
@@ -137,16 +137,16 @@ class Snake:
     def change_user(self, user):
         if self.user != user:
             self.user = user
-            self.change_head_color(Color.get(user=self.user, type='Head').code)
-            self.change_body_color(Color.get(user=self.user, type='Body').code)
+            self.change_head_color(Config.fetch(user=self.user, label='Head'))
+            self.change_body_color(Config.fetch(user=self.user, label='Body'))
 
     def change_body_color(self, code):
-        Color.update(code=code).where(Color.user == self.user, Color.type == 'Body').execute()
+        Config.update(value=code).where(Config.user == self.user, Config.label == 'Body').execute()
 
         for body in self.body:
             self.canvas.itemconfig(body, fill=code)
 
     def change_head_color(self, code):
-        Color.update(code=code).where(Color.user == self.user, Color.type == 'Head').execute()
+        Config.update(value=code).where(Config.user == self.user, Config.label == 'Head').execute()
 
         self.canvas.itemconfig(self.head, fill=code)

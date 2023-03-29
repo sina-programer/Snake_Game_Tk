@@ -27,16 +27,23 @@ class Score(pw.Model):
         database = db
 
 
-class Color(pw.Model):
-    user = pw.ForeignKeyField(User)
-    code = pw.CharField(7)
-    type = pw.CharField()
+class Config(pw.Model):
+    user = pw.ForeignKeyField(User, backref='configs')
+    label = pw.CharField()
+    value = pw.CharField()
+
+    @classmethod
+    def fetch(cls, user, label):
+        try:
+            return cls.get(user=user, label=label).value
+        except Exception:
+            return None
 
     class Meta:
         database = db
 
 
-TABLES = [User, Score, Color]
+TABLES = [User, Score, Config]
 
 for table in TABLES:  # Create tables
     not db.table_exists(table.__name__) and db.create_tables([table])

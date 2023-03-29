@@ -4,7 +4,7 @@ import webbrowser
 import hashlib
 import tksheet
 
-from database import User, Score, Color
+from database import User, Score, Config
 import meta
 
 
@@ -175,7 +175,7 @@ class SignupDialog(BaseDialog):
         if not User.get_or_none(username=username):
             user = User.create(username=username, password=password)
             for ctype, color in meta.default_colors.items():
-                Color.create(user=user, code=color, type=ctype)
+                Config.create(user=user, label=ctype, value=color)
 
             self.destroy()
             messagebox.showinfo(meta.title, 'Your account created successfully! \nnow you most sign in')
@@ -372,17 +372,17 @@ class SettingDialog(BaseDialog):
 
         tk.Label(frame, text='Snake Head Color:', state=self.state).grid(row=2, column=1, columnspan=3, pady=5)
         self.head_color_btn = tk.Button(frame, width=2, command=self.set_head_color, state=self.state,
-                                        bg=Color.get(user=self.app.user, type='Head').code)
+                                        bg=Config.fetch(user=self.app.user, label='Head'))
         self.head_color_btn.grid(row=2, column=4, pady=5)
 
         tk.Label(frame, text='Snake Body Color:', state=self.state).grid(row=3, column=1, columnspan=3, pady=5)
         self.body_color_btn = tk.Button(frame, width=2, command=self.set_body_color, state=self.state,
-                                        bg=Color.get(user=self.app.user, type='Body').code)
+                                        bg=Config.fetch(user=self.app.user, label='Body'))
         self.body_color_btn.grid(row=3, column=4, pady=5)
 
         tk.Label(frame, text='Background Color:', state=self.state).grid(row=4, column=1, columnspan=3, pady=5)
         self.bg_color_btn = tk.Button(frame, width=2, command=self.set_bg_color, state=self.state,
-                                      bg=Color.get(user=self.app.user, type='Background').code)
+                                      bg=Config.fetch(user=self.app.user, label='Background'))
         self.bg_color_btn.grid(row=4, column=4, pady=5)
 
         tk.Button(frame, text='Reset', width=10, command=self.reset).grid(row=5, column=1, columnspan=2, pady=20, padx=5)
@@ -404,9 +404,9 @@ class SettingDialog(BaseDialog):
             self.app.restart()
             self.app.set_level(self.level_var.get())
 
-        Color.update(code=self.head_color_btn['bg']).where(Color.user == self.app.user, Color.type == 'Head').execute()
-        Color.update(code=self.body_color_btn['bg']).where(Color.user == self.app.user, Color.type == 'Body').execute()
-        Color.update(code=self.bg_color_btn['bg']).where(Color.user == self.app.user, Color.type == 'Background').execute()
+        Config.update(value=self.head_color_btn['bg']).where(Config.user == self.app.user, Config.label == 'Head').execute()
+        Config.update(value=self.body_color_btn['bg']).where(Config.user == self.app.user, Config.label == 'Body').execute()
+        Config.update(value=self.bg_color_btn['bg']).where(Config.user == self.app.user, Config.label == 'Background').execute()
 
         self.app.update_personalizations()
 
@@ -423,9 +423,9 @@ class SettingDialog(BaseDialog):
         self.bg_color_btn.config(bg=new_bg_color)
 
     def reset(self):
-        self.head_color_btn.config(bg=Color.get(user=self.app.user, type='Head').code)
-        self.body_color_btn.config(bg=Color.get(user=self.app.user, type='Body').code)
-        self.bg_color_btn.config(bg=Color.get(user=self.app.user, type='Background').code)
+        self.head_color_btn.config(bg=Config.fetch(user=self.app.user, label='Head'))
+        self.body_color_btn.config(bg=Config.fetch(user=self.app.user, label='Body'))
+        self.bg_color_btn.config(bg=Config.fetch(user=self.app.user, label='Background'))
         self.level_var.set(self.app.level.get())
 
 
