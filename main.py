@@ -13,17 +13,17 @@ def get_geometry(root):
     start_width = int((scr_width / 2) - 250)
     start_height = int((scr_height / 2) - 330)
 
-    return f"{meta.main_width}x{meta.main_height}+{start_width}+{start_height}"
+    return f"{meta.WIDTH}x{meta.HEIGHT}+{start_width}+{start_height}"
 
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title(meta.title)
+    root.title(meta.TITLE)
     root.geometry(get_geometry(root))
     root.resizable(False, False)
-    if os.path.exists(meta.icon_path):
-        root.iconbitmap(default=meta.icon_path)
+    if os.path.exists(meta.ICON_PATH):
+        root.iconbitmap(default=meta.ICON_PATH)
 
     app = model.App(root)
     app.mainloop()

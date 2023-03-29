@@ -90,25 +90,24 @@ class App(tk.Frame):
         level_frame.grid(row=1, column=3, padx=15)
         energy_frame.grid(row=2, column=3, padx=15)
 
-        tk.Label(score_frame, text='Score:', font=meta.medium_font).pack(side=tk.LEFT, padx=5)
-        tk.Label(score_frame, textvariable=self.score, font=meta.medium_font).pack(side=tk.RIGHT)
+        tk.Label(score_frame, text='Score:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
+        tk.Label(score_frame, textvariable=self.score, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
-        tk.Label(bestscore_frame, text='Best Score:', font=meta.medium_font).pack(side=tk.LEFT, padx=5)
-        tk.Label(bestscore_frame, textvariable=self.best_score, font=meta.medium_font).pack(side=tk.RIGHT)
+        tk.Label(bestscore_frame, text='Best Score:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
+        tk.Label(bestscore_frame, textvariable=self.best_score, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
-        tk.Label(username_frame, text='User:', font=meta.large_font).pack(side=tk.LEFT, padx=5)
-        self.username_lbl = tk.Label(username_frame, text=self.user.username, font=meta.large_font_italic)
+        tk.Label(username_frame, text='User:', font=meta.FONTS['large']).pack(side=tk.LEFT, padx=5)
+        self.username_lbl = tk.Label(username_frame, text=self.user.username, font=meta.FONTS['large_italic'])
         self.username_lbl.pack(side=tk.RIGHT)
 
-        tk.Label(level_frame, text='Level:', font=meta.medium_font).pack(side=tk.LEFT, padx=5)
-        tk.Label(level_frame, textvariable=self.level, font=meta.medium_font).pack(side=tk.RIGHT)
+        tk.Label(level_frame, text='Level:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
+        tk.Label(level_frame, textvariable=self.level, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
-        tk.Label(energy_frame, text='Energy:', font=meta.medium_font).pack(side=tk.LEFT, padx=5)
-        tk.Label(energy_frame, textvariable=self.energy, font=meta.medium_font).pack(side=tk.RIGHT)
+        tk.Label(energy_frame, text='Energy:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
+        tk.Label(energy_frame, textvariable=self.energy, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
 
-        self.canvas = tk.Canvas(self, width=meta.frame_width, height=meta.frame_height,
-                                highlightthickness=1.5, highlightbackground='black')
+        self.canvas = tk.Canvas(self, width=meta.FRAME_WIDTH, height=meta.FRAME_HEIGHT, highlightthickness=1.5, highlightbackground='black')
         self.snake = Snake(self.user, self.canvas, size=16)
         self.bait = Bait(self.canvas, size=16, score=30, timeout=60, color='green')
         self.set_level(meta.defaults['configs']['Level'])
@@ -128,13 +127,12 @@ class App(tk.Frame):
 
     def restart(self):
         if score := self.score.get():  # auto save score when change level meanwhile game loop
-            Score.create(user=self.user, score=score,
-                         level=self.level.get(), datetime=dt.datetime.now())
+            Score.create(user=self.user, score=score, level=self.level.get(), datetime=dt.datetime.now())
 
         if score > self.best_score.get():
             self.best_score.set(score)
 
-        self.energy.set(meta.base_energy)
+        self.energy.set(meta.BASE_ENERGY)
         self.score.set(0)
         self.snake.reset()
         self.bait.reset()
@@ -166,7 +164,7 @@ class App(tk.Frame):
     def check_head_and_body_collision(self):
         for body in self.snake.body:
             if check_collision(self.canvas, self.snake.head, body):
-                messagebox.showinfo(meta.title, 'You loss')
+                messagebox.showinfo(meta.TITLE, 'You loss')
                 self.restart()
                 break
 
@@ -183,31 +181,31 @@ class App(tk.Frame):
             if self.snake.direction != 'stop':
                 self.energy.set(energy - 1)
         else:
-            messagebox.showinfo(meta.title, 'Your energies finished!')
+            messagebox.showinfo(meta.TITLE, 'Your energies finished!')
             self.restart()
 
     def set_level(self, level):
         self.level.set(level)
-        self.energy.set(meta.base_energy)
+        self.energy.set(meta.BASE_ENERGY)
         self.delay = .15 - (self.level.get() * 24) / 1000
 
         self.update_best_score()
 
     def reset_scores(self):
-        submit = messagebox.askokcancel(meta.title, 'Are you sure you want to reset all your scores?')
+        submit = messagebox.askokcancel(meta.TITLE, 'Are you sure you want to reset all your scores?')
         if submit:
             Score.delete().where(Score.user == self.user).execute()
             self.best_score.set(0)
-            messagebox.showinfo(meta.title, 'Reset all your scores finished successfully!')
+            messagebox.showinfo(meta.TITLE, 'Reset all your scores finished successfully!')
 
     def delete_account(self):
-        submit = messagebox.askokcancel(meta.title, 'Are you sure you want to delete your account?')
+        submit = messagebox.askokcancel(meta.TITLE, 'Are you sure you want to delete your account?')
         if submit:
             Score.delete().where(Score.user == self.user).execute()
             User.delete().where(User.username == self.user.username).execute()
             self.change_user(meta.default_user)
             self.destroy()
-            messagebox.showinfo(meta.title, 'Your account deleted successfully!')
+            messagebox.showinfo(meta.TITLE, 'Your account deleted successfully!')
 
     def game_loop(self):
         while True:

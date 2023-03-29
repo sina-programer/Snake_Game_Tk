@@ -14,8 +14,8 @@ class Bait:
         self.timer = timeout
         self.canvas = canvas
 
-        self.x = random.randrange(self.half_size, meta.frame_width, self.size)
-        self.y = random.randrange(self.half_size, meta.frame_height, self.size)
+        self.x = random.randrange(self.half_size, meta.FRAME_WIDTH, self.size)
+        self.y = random.randrange(self.half_size, meta.FRAME_HEIGHT, self.size)
         self.item = self.canvas.create_rectangle(self.x - self.half_size,
                                                  self.y - self.half_size,
                                                  self.x + self.half_size,
@@ -25,8 +25,8 @@ class Bait:
     def move(self):
         self.timer = self.timeout
 
-        self.x = random.randrange(self.half_size, (meta.frame_width - (self.size + self.half_size)), self.size)
-        self.y = random.randrange(self.half_size, (meta.frame_width - (self.size + self.half_size)), self.size)
+        self.x = random.randrange(self.half_size, (meta.FRAME_WIDTH - (self.size + self.half_size)), self.size)
+        self.y = random.randrange(self.half_size, (meta.FRAME_WIDTH - (self.size + self.half_size)), self.size)
         model.move(self.canvas, self.item, self.x, self.y)
 
     def reset(self):
@@ -54,8 +54,8 @@ class Snake:
         self.direction = 'stop'
         self.size = size
         self.half_size = self.size / 2  # to don't div every time
-        self.start_x = (meta.frame_width / 2) - self.half_size
-        self.start_y = (meta.frame_height / 2) - self.half_size
+        self.start_x = (meta.FRAME_WIDTH / 2) - self.half_size
+        self.start_y = (meta.FRAME_HEIGHT / 2) - self.half_size
         self.head = self.canvas.create_rectangle(self.start_x - self.half_size,
                                                  self.start_y - self.half_size,
                                                  self.start_x + self.half_size,
@@ -125,14 +125,14 @@ class Snake:
         coords = self.canvas.coords(self.head)
 
         if coords[0] < 0:  # left
-            self.canvas.move(self.head, meta.frame_width, 0)
-        elif coords[2] > meta.frame_width:  # right
-            self.canvas.move(self.head, -meta.frame_width, 0)
+            self.canvas.move(self.head, meta.FRAME_WIDTH, 0)
+        elif coords[2] > meta.FRAME_WIDTH:  # right
+            self.canvas.move(self.head, -meta.FRAME_WIDTH, 0)
 
         if coords[1] < 0:  # up
-            self.canvas.move(self.head, 0, meta.frame_height)
-        elif coords[3] > meta.frame_height:  # down
-            self.canvas.move(self.head, 0, -meta.frame_height)
+            self.canvas.move(self.head, 0, meta.FRAME_HEIGHT)
+        elif coords[3] > meta.FRAME_HEIGHT:  # down
+            self.canvas.move(self.head, 0, -meta.FRAME_HEIGHT)
 
     def change_user(self, user):
         if self.user != user:

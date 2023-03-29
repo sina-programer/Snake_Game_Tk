@@ -9,7 +9,7 @@ import meta
 
 
 def beep():
-    if meta.is_windows:
+    if meta.IS_WINDOWS:
         import winsound
         winsound.MessageBeep()
 
@@ -48,7 +48,7 @@ class ChangePasswordDialog(BaseDialog):
         confirm_pass_field = tk.Entry(frame, textvariable=self.confirm_pass_var, show=self.show_pass_state.get())
         confirm_pass_field.grid(row=3, column=3, pady=5)
 
-        tk.Checkbutton(frame, text='Show password', variabl=self.show_pass_state, onvalue='', offvalue='*',
+        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
                        command=lambda *args: confirm_pass_field.config(show=self.show_pass_state.get())
                        ).grid(row=4, column=1, columnspan=2, pady=3)
 
@@ -73,14 +73,14 @@ class ChangePasswordDialog(BaseDialog):
                     new_password = hashlib.sha256(new_password.encode()).hexdigest()
                     User.update(password=new_password).where(User.username == self.app.user.username).execute()
                     self.destroy()
-                    messagebox.showinfo(meta.title, 'Your password changed successfully!')
+                    messagebox.showinfo(meta.TITLE, 'Your password changed successfully!')
 
                 else:
-                    messagebox.showwarning(meta.title, 'Passwords not match!')
+                    messagebox.showwarning(meta.TITLE, 'Passwords not match!')
             else:
-                messagebox.showwarning(meta.title, 'Your password is incorrect!')
+                messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
         else:
-            messagebox.showwarning(meta.title, 'Password field is empty!')
+            messagebox.showwarning(meta.TITLE, 'Password field is empty!')
 
 
 class ChangeUsernameDialog(BaseDialog):
@@ -112,14 +112,14 @@ class ChangeUsernameDialog(BaseDialog):
                     User.update(username=new_username).where(User.username == self.app.user.username).execute()
                     self.app.user.username = new_username
                     self.destroy()
-                    messagebox.showinfo(meta.title, f'Your username changed from <{old_username}> to <{new_username}>')
+                    messagebox.showinfo(meta.TITLE, f'Your username changed from <{old_username}> to <{new_username}>')
 
                 else:
-                    messagebox.showwarning(meta.title, 'Username already exists!')
+                    messagebox.showwarning(meta.TITLE, 'Username already exists!')
             else:
-                messagebox.showwarning(meta.title, "You can't change your username to the current username!")
+                messagebox.showwarning(meta.TITLE, "You can't change your username to the current username!")
         else:
-            messagebox.showwarning(meta.title, 'Username field is empty!')
+            messagebox.showwarning(meta.TITLE, 'Username field is empty!')
 
 
 class SignupDialog(BaseDialog):
@@ -148,7 +148,7 @@ class SignupDialog(BaseDialog):
         confirm_pass_field = tk.Entry(frame, show=self.show_pass_state.get(), textvariable=self.confirm_pass_var)
         confirm_pass_field.grid(row=2, column=2, pady=5)
 
-        tk.Checkbutton(frame, text='Show password', variabl=self.show_pass_state, onvalue='', offvalue='*',
+        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
                        command=lambda *args: confirm_pass_field.config(show=self.show_pass_state.get())
                        ).grid(row=3, column=0, columnspan=2, pady=3)
 
@@ -176,10 +176,10 @@ class SignupDialog(BaseDialog):
             from model import create_user
             create_user(username=username, password=password)
             self.destroy()
-            messagebox.showinfo(meta.title, 'Your account created successfully! \nnow you most sign in')
+            messagebox.showinfo(meta.TITLE, 'Your account created successfully! \nnow you most sign in')
 
         else:
-            messagebox.showwarning(meta.title, 'Username already exists!')
+            messagebox.showwarning(meta.TITLE, 'Username already exists!')
 
     def check_match(self):
         password = self.pass_var.get()
@@ -219,7 +219,7 @@ class SigninDialog(BaseDialog):
         pass_field = tk.Entry(frame, textvariable=self.pass_var, show=self.show_pass_state.get())
         pass_field.grid(row=2, column=2, pady=5)
 
-        tk.Checkbutton(frame, text='Show password', variabl=self.show_pass_state, onvalue='', offvalue='*',
+        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
                        command=lambda *args: pass_field.config(show=self.show_pass_state.get())
                        ).grid(row=3, column=2, pady=5)
 
@@ -242,19 +242,19 @@ class SigninDialog(BaseDialog):
         user = User.get_or_none(username=username)
         if user:
             if self.app.user != user:
-                if password == user.password or username == meta.default_username:
+                if password == user.password or username == meta.defaults['username']:
                     self.app.restart()
                     self.app.change_user(user)
 
                     self.destroy()
-                    messagebox.showinfo(meta.title, 'You logged in successfully!')
+                    messagebox.showinfo(meta.TITLE, 'You logged in successfully!')
 
                 else:
-                    messagebox.showwarning(meta.title, 'Your password is incorrect!')
+                    messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
             else:
-                messagebox.showinfo(meta.title, 'This is current user!')
+                messagebox.showinfo(meta.TITLE, 'This is current user!')
         else:
-            messagebox.showwarning(meta.title, 'Please enter a valid user!')
+            messagebox.showwarning(meta.TITLE, 'Please enter a valid user!')
 
     def signup(self):
         self.destroy()
@@ -275,11 +275,11 @@ class BestScoresDialog(BaseDialog):
         for counter, score in enumerate(scores, 1):
             sheet.insert_row([score.user.username, score.score, score.datetime.date()])
 
-            if counter >= meta.best_scores_limit:
+            if counter >= meta.BEST_SCORES_LIMIT:
                 break
 
         sheet.enable_bindings()
-        sheet.disable_bindings(meta.unwanted_bindings)
+        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
 
         self.resizable(False, False)
         self.geometry('440x260')
@@ -304,7 +304,7 @@ class MyScoresDialog(BaseDialog):
             sheet.insert_row([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
 
         sheet.enable_bindings()
-        sheet.disable_bindings(meta.unwanted_bindings)
+        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
 
         self.resizable(False, False)
         self.geometry('440x260')
@@ -342,7 +342,7 @@ class RecordsDialog(BaseDialog):
             ])
 
         sheet.enable_bindings()
-        sheet.disable_bindings(meta.unwanted_bindings)
+        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
 
         self.resizable(False, False)
         self.geometry('400x100')
@@ -398,7 +398,7 @@ class SettingDialog(BaseDialog):
 
     def apply(self):
         if self.level_var.get() != self.app.level.get() and messagebox.askokcancel(
-                meta.title, 'Are you sure you want to restart the game? (score will save)'):
+                meta.TITLE, 'Are you sure you want to restart the game? (score will save)'):
             self.app.restart()
             self.app.set_level(self.level_var.get())
 
@@ -435,9 +435,9 @@ class AboutDialog(BaseDialog):
     def body(self, frame):
         tk.Label(frame, text='This game made by Sina.f').grid(row=1, column=1, columnspan=2, pady=15)
 
-        tk.Button(frame, text='GitHub', width=8, command=lambda: webbrowser.open(meta.links['github'])
+        tk.Button(frame, text='GitHub', width=8, command=lambda: webbrowser.open(meta.LINKS['github'])
                   ).grid(row=2, column=1, padx=7)
-        tk.Button(frame, text='Telegram', width=8, command=lambda: webbrowser.open(meta.links['telegram'])
+        tk.Button(frame, text='Telegram', width=8, command=lambda: webbrowser.open(meta.LINKS['telegram'])
                   ).grid(row=2, column=2, padx=7)
 
         self.geometry('220x100')

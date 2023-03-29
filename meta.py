@@ -4,33 +4,35 @@ import os
 from database import User
 
 
-is_windows = (sys.platform == 'win32')
-secret_folder = os.path.expanduser(r'~\.SnakeTk')
-if not os.path.exists(secret_folder):
-    os.mkdir(secret_folder)
+IS_WINDOWS = (sys.platform == 'win32')
+SECRET_FOLDER = os.path.expanduser(r'~\.SnakeTk')
+if not os.path.exists(SECRET_FOLDER):
+    os.mkdir(SECRET_FOLDER)
 
-title = 'Snake Game'
-icon_path = r'icon.ico'
+TITLE = 'Snake Game'
+ICON_PATH = r'icon.ico'
 
-main_width = 540
-main_height = 610
-frame_width = 512  # frame for moving snake
-frame_height = 480
+WIDTH = 540
+HEIGHT = 610
+FRAME_WIDTH = 512  # frame for moving snake
+FRAME_HEIGHT = 480
 
-base_energy = 200
-best_scores_limit = 20
+BASE_ENERGY = 200
+BEST_SCORES_LIMIT = 20
 
-medium_font = ('Segoe ui', 15)
-large_font = ('Segoe ui', 20)
-large_font_italic = ('Segoe ui', 20, 'italic')
+FONTS = {
+    'medium': ('Segoe ui', 15),
+    'large': ('Segoe ui', 20),
+    'large_italic': ('Segoe ui', 20, 'italic'),
+}
 
-links = {
+LINKS = {
     'telegram': 'https://t.me/sina_programer',
     'github': 'https://github.com/sina-programer'
 }
 
 
-unwanted_bindings = (
+UNWANTED_BINDINGS = (
     'cut',
     'delete',
     'edit_cell',
@@ -49,6 +51,7 @@ unwanted_bindings = (
     'double_click_column_resize',
     'column_width_resize'
 )
+
 
 defaults = {
     'username': 'Player',
