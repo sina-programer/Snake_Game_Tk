@@ -111,7 +111,7 @@ class App(tk.Frame):
                                 highlightthickness=1.5, highlightbackground='black')
         self.snake = Snake(self.user, self.canvas, size=16)
         self.bait = Bait(self.canvas, size=16, score=30, timeout=60, color='green')
-        self.set_level(meta.default_level)
+        self.set_level(meta.defaults['configs']['Level'])
         self.update_personalizations()
 
 

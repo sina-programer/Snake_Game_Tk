@@ -51,7 +51,7 @@ unwanted_bindings = (
 )
 
 defaults = {
-    'username': 'Player-Default',
+    'username': 'Player',
     'password': '',
     'configs': {
         'Head': '#000000',
