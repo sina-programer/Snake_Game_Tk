@@ -208,14 +208,14 @@ class App(tk.Frame):
             messagebox.showinfo(meta.TITLE, 'Your account deleted successfully!')
 
     def game_loop(self):
-        while True:
-            self.check_energy()
-            self.check_eating_bait()
-            self.check_head_and_body_collision()
-            self.snake.move()
-            self.bait.auto_move()
-            self.update()
-            time.sleep(self.delay)
+        self.check_energy()
+        self.check_eating_bait()
+        self.check_head_and_body_collision()
+        self.snake.move()
+        self.bait.auto_move()
+        self.update()
+
+        self.master.after(int(self.delay * 1000), self.game_loop)
 
     def init_menu(self):
         main_menu = tk.Menu(self.master)
