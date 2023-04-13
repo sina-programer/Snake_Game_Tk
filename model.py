@@ -96,9 +96,9 @@ class App(tk.Frame):
         tk.Label(bestscore_frame, text='Best Score:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
         tk.Label(bestscore_frame, textvariable=self.best_score, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
-        tk.Label(username_frame, text='User:', font=meta.FONTS['large']).pack(side=tk.LEFT, padx=5)
-        self.username_lbl = tk.Label(username_frame, text=self.user.username, font=meta.FONTS['large_italic'])
-        self.username_lbl.pack(side=tk.RIGHT)
+        tk.Label(username_frame, text='User:', font=meta.FONTS['large']).pack(side=tk.TOP)
+        self.username_lbl = tk.Label(username_frame, text=self.user.username, font=meta.FONTS['large_italic'], width=13)
+        self.username_lbl.pack(side=tk.BOTTOM)
 
         tk.Label(level_frame, text='Level:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
         tk.Label(level_frame, textvariable=self.level, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
