@@ -48,8 +48,6 @@ UNWANTED_BINDINGS = (
     'row_height_resize',
     'column_height_resize',
     'row_width_resize',
-    'double_click_column_resize',
-    'column_width_resize'
 )
 
 
