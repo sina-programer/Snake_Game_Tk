@@ -51,7 +51,7 @@ class Snake:
         self.body = []
         self.user = user
         self.canvas = canvas
-        self.direction = 'stop'
+        self.direction = None
         self.size = size
         self.half_size = self.size / 2  # to don't div every time
         self.start_x = (meta.FRAME_WIDTH / 2) - self.half_size
@@ -62,7 +62,6 @@ class Snake:
                                                  self.start_y + self.half_size,
                                                  fill=Config.fetch(user=self.user, label='Head'))
         self.aims = {
-            'stop': None,
             'up': (0, -self.size),
             'down': (0, self.size),
             'left': (-self.size, 0),
@@ -71,7 +70,7 @@ class Snake:
 
     def move(self):
         aim = self.aims.get(self.direction, None)
-        if aim:
+        if aim is not None:
             last_pos = model.get_position(self.canvas, self.head)
             self.canvas.move(self.head, *aim)
 
@@ -97,7 +96,7 @@ class Snake:
         )
 
     def reset(self):
-        self.direction = 'stop'
+        self.direction = None
         self.canvas.delete(self.head)
         self.head = self.canvas.create_rectangle(self.start_x - self.half_size,
                                                  self.start_y - self.half_size,
@@ -108,18 +107,14 @@ class Snake:
             self.canvas.delete(body)
         self.body = []
 
-    def set_direction(self, aim):
-        if aim in self.aims.keys():
-            # if self.direction == 'stop' or aim == 'stop':
-            if 'stop' in [self.direction, aim]:  # if snake want to start, or want to stop
-                self.direction = aim
-            else:
-                # if (self.direction == 'up' and aim != 'down') or \
-                #    (self.direction == 'down' and aim != 'up') or \
-                #    (self.direction == 'left' and aim != 'right') or \
-                #    (self.direction == 'right' and aim != 'left'):
-                if {self.direction, aim} not in Snake.opposites:
-                    self.direction = aim
+    def set_direction(self, direction):
+        if direction in self.aims.keys():
+            # if (self.direction == 'up' and aim != 'down') or \
+            #    (self.direction == 'down' and aim != 'up') or \
+            #    (self.direction == 'left' and aim != 'right') or \
+            #    (self.direction == 'right' and aim != 'left'):
+            if {self.direction, direction} not in Snake.opposites:
+                self.direction = direction
 
     def check_inside(self):
         coords = self.canvas.coords(self.head)

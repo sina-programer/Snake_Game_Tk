@@ -65,6 +65,7 @@ class App(tk.Frame):
         self.menus = {}
         self.delay = None
         self.canvas = None
+        self._pause = False
         self.user = meta.default_user
 
         self.score = tk.IntVar()
@@ -118,7 +119,7 @@ class App(tk.Frame):
         self.master.bind('<Down>', lambda _: self.snake.set_direction('down'))
         self.master.bind('<Left>', lambda _: self.snake.set_direction('left'))
         self.master.bind('<Right>', lambda _: self.snake.set_direction('right'))
-        self.master.bind('<Escape>', lambda _: self.snake.set_direction('stop'))
+        self.master.bind('<Escape>', lambda _: self.pause())
 
         self.pack(side=tk.BOTTOM, pady=5)
         self.canvas.pack(pady=5)
@@ -208,14 +209,18 @@ class App(tk.Frame):
             messagebox.showinfo(meta.TITLE, 'Your account deleted successfully!')
 
     def game_loop(self):
-        self.check_energy()
-        self.check_eating_bait()
-        self.check_head_and_body_collision()
-        self.snake.move()
-        self.bait.auto_move()
-        self.update()
+        if not self._pause:
+            self.check_energy()
+            self.check_eating_bait()
+            self.check_head_and_body_collision()
+            self.snake.move()
+            self.bait.auto_move()
+            self.update()
 
         self.master.after(int(self.delay * 1000), self.game_loop)
+
+    def pause(self):
+        self._pause = not self._pause
 
     def init_menu(self):
         main_menu = tk.Menu(self.master)
