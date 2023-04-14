@@ -65,7 +65,7 @@ class App(tk.Frame):
         self.menus = {}
         self.delay = None
         self.canvas = None
-        self._pause = False
+        self._pause = True
         self.user = meta.default_user
 
         self.score = tk.IntVar()
@@ -120,11 +120,10 @@ class App(tk.Frame):
         self.master.bind('<Left>', lambda _: self.snake.set_direction('left'))
         self.master.bind('<Right>', lambda _: self.snake.set_direction('right'))
         self.master.bind('<Escape>', lambda _: self.pause())
+        self.master.bind('<Return>', lambda _: self.start())
 
         self.pack(side=tk.BOTTOM, pady=5)
         self.canvas.pack(pady=5)
-
-        self.game_loop()
 
     def restart(self):
         if score := self.score.get():  # auto save score when change level meanwhile game loop
@@ -207,6 +206,12 @@ class App(tk.Frame):
             self.change_user(meta.default_user)
             self.destroy()
             messagebox.showinfo(meta.TITLE, 'Your account deleted successfully!')
+
+    def start(self):
+        self.master.unbind('<Return>')
+        self.snake.set_direction('up')
+        self._pause = False
+        self.game_loop()
 
     def game_loop(self):
         if not self._pause:
