@@ -164,7 +164,7 @@ class App(tk.Frame):
     def check_head_and_body_collision(self):
         for body in self.snake.body:
             if check_collision(self.canvas, self.snake.head, body):
-                messagebox.showinfo(meta.TITLE, 'You loss')
+                messagebox.showinfo(meta.TITLE, 'You lost')
                 self.restart()
                 break
 
@@ -187,20 +187,18 @@ class App(tk.Frame):
     def set_level(self, level):
         self.level.set(level)
         self.energy.set(meta.BASE_ENERGY)
-        self.delay = .15 - (self.level.get() * 24) / 1000
+        self.delay = (150 - (self.level.get() * 24))
 
         self.update_best_score()
 
     def reset_scores(self):
-        submit = messagebox.askokcancel(meta.TITLE, 'Are you sure you want to reset all your scores?')
-        if submit:
+        if messagebox.askokcancel(meta.TITLE, 'Are you sure you want to reset all your scores?'):
             Score.delete().where(Score.user == self.user).execute()
             self.best_score.set(0)
-            messagebox.showinfo(meta.TITLE, 'Reset all your scores finished successfully!')
+            messagebox.showinfo(meta.TITLE, 'All your scores were reset!')
 
     def delete_account(self):
-        submit = messagebox.askokcancel(meta.TITLE, 'Are you sure you want to delete your account?')
-        if submit:
+        if messagebox.askokcancel(meta.TITLE, 'Are you sure you want to delete your account?'):
             Score.delete().where(Score.user == self.user).execute()
             User.delete().where(User.username == self.user.username).execute()
             self.change_user(meta.default_user)
@@ -215,14 +213,14 @@ class App(tk.Frame):
 
     def game_loop(self):
         if not self._pause:
-            self.check_energy()
             self.check_eating_bait()
+            self.check_energy()
             self.check_head_and_body_collision()
             self.snake.move()
             self.bait.auto_move()
             self.update()
 
-        self.master.after(int(self.delay * 1000), self.game_loop)
+        self.master.after(self.delay, self.game_loop)
 
     def pause(self):
         self._pause = not self._pause

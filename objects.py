@@ -82,8 +82,8 @@ class Snake:
         self.check_inside()
 
     def grow(self):
-        x, y = model.get_position(self.canvas, self.head)
         aim = self.aims.get(self.direction, None)
+        x, y = model.get_position(self.canvas, self.head)
         x -= aim[0]
         y -= aim[1]
 

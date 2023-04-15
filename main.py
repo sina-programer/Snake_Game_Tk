@@ -26,4 +26,4 @@ if __name__ == "__main__":
         root.iconbitmap(default=meta.ICON_PATH)
 
     app = model.App(root)
-    app.mainloop()
+    root.mainloop()
