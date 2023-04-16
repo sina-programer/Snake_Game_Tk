@@ -122,6 +122,9 @@ class App(tk.Frame):
         self.master.bind('<Escape>', lambda _: self.pause())
         self.master.bind('<Return>', lambda _: self.start())
 
+        self.guide_lbl = tk.Label(self, text='Press <enter> to start')
+        self.guide_lbl.pack()
+
         self.pack(side=tk.BOTTOM, pady=5)
         self.canvas.pack(pady=5)
 
@@ -178,7 +181,7 @@ class App(tk.Frame):
     def check_energy(self):
         energy = self.energy.get()
         if energy > 0:
-            if self.snake.direction != 'stop':
+            if not self._pause:
                 self.energy.set(energy - 1)
         else:
             messagebox.showinfo(meta.TITLE, 'Your energies finished!')
@@ -209,6 +212,7 @@ class App(tk.Frame):
         self.master.unbind('<Return>')
         self.snake.set_direction('up')
         self._pause = False
+        self.guide_lbl.pack_forget()
         self.game_loop()
 
     def game_loop(self):
