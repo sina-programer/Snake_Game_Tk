@@ -96,7 +96,7 @@ class App:
         self.update_personalizations()
         self.set_level(Config.fetch(user=user, label='Level'))
 
-        if self.user == meta.default_user:
+        if self.user.is_default:
             self.menus['account'].entryconfig('Manage Account', state=tk.DISABLED)
         else:
             self.menus['account'].entryconfig('Manage Account', state=tk.NORMAL)

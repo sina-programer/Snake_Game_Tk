@@ -66,4 +66,4 @@ defaults = {
 default_user = User.get_or_none(username=defaults['username'])
 if not default_user:
     from model import create_user
-    default_user = create_user(username=defaults['username'], password=defaults['password'])
+    default_user = create_user(username=defaults['username'], password=defaults['password'], is_default=True)

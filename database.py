@@ -12,6 +12,7 @@ db.connect()
 class User(pw.Model):
     username = pw.CharField(unique=True)
     password = pw.CharField()
+    is_default = pw.BooleanField(default=False)
 
     class Meta:
         database = db

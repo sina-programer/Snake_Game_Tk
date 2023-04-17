@@ -355,7 +355,10 @@ class SettingDialog(BaseDialog):
         self.bg_color_btn = None
         self.head_color_btn = None
         self.body_color_btn = None
-        self.state = tk.DISABLED if app.user == meta.default_user else tk.NORMAL
+        if app.user.is_default:
+            self.state = tk.DISABLED
+        else:
+            self.state = tk.NORMAL
 
         self.level_var = tk.IntVar()
 

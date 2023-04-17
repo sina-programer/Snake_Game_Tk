@@ -1,14 +1,9 @@
-from tkinter import messagebox
-import tkinter as tk
-import datetime as dt
-import time
-
 from database import User, Score, Config
 import meta
 
 
-def create_user(username, password):
-    user = User.create(username=username, password=password, signup_date=dt.datetime.now())
+def create_user(username, password, is_default=False):
+    user = User.create(username=username, password=password, is_default=is_default)
     for label, value in meta.defaults['configs'].items():
         Config.create(user=user, label=label, value=value)
 
