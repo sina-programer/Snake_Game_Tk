@@ -23,10 +23,6 @@ class App:
         self.snake = Snake(self.user, self.game_frame.canvas, size=16)
         self.bait = Bait(self.game_frame.canvas, size=16, score=30, timeout=60, color='green')
 
-        self.set_level(Config.fetch(user=self.user, label='Level'))
-        self.game_frame.username.set(self.user.username)
-        self.update_personalizations()
-
         self.master = master
         self.master.config(menu=self.init_menu())
         self.master.bind('<Up>', lambda _: self.snake.set_direction('up'))
@@ -35,6 +31,8 @@ class App:
         self.master.bind('<Right>', lambda _: self.snake.set_direction('right'))
         self.master.bind('<Escape>', lambda _: self.pause())
         self.master.bind('<Return>', lambda _: self.start())
+
+        self.change_user(self.user)
 
         self.guide_lbl = tk.Label(self.game_frame, text='Press <enter> to start')
         self.guide_lbl.pack()
@@ -56,6 +54,7 @@ class App:
         self.game_frame.username.set(self.user.username)
         self.snake.change_user(self.user)  # change colors too
         self.update_personalizations()
+        self.set_level(Config.fetch(user=user, label='Level'))
 
         if self.user == meta.default_user:
             self.menus['account'].entryconfig('Manage Account', state=tk.DISABLED)
@@ -103,6 +102,7 @@ class App:
         self.game_frame.energy.set(meta.BASE_ENERGY)
         self.delay = (150 - (self.game_frame.level.get() * 24))
 
+        Config.update(value=level).where(Config.user == self.user, Config.label == 'Level').execute()
         self.update_best_score()
 
     def reset_scores(self):
