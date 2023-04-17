@@ -2,6 +2,7 @@ import sys
 import os
 
 from database import User
+import model
 
 
 IS_WINDOWS = (sys.platform == 'win32')
@@ -54,16 +55,9 @@ UNWANTED_BINDINGS = (
 defaults = {
     'username': 'Player',
     'password': '',
-    'configs': {
-        'Head': '#000000',
-        'Body': '#A9A9A9',
-        'Background': '#ADD8E6',
-        'Level': 2
-    }
 }
 
 
 default_user = User.get_or_none(username=defaults['username'])
 if not default_user:
-    from model import create_user
-    default_user = create_user(username=defaults['username'], password=defaults['password'], is_default=True)
+    default_user = model.create_user(username=defaults['username'], password=defaults['password'], is_default=True)

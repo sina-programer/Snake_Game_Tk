@@ -1,10 +1,16 @@
 from database import User, Score, Config
-import meta
 
 
 def create_user(username, password, is_default=False):
+    configs = {
+        'Head': '#000000',
+        'Body': '#A9A9A9',
+        'Background': '#ADD8E6',
+        'Level': 2
+    }
+
     user = User.create(username=username, password=password, is_default=is_default)
-    for label, value in meta.defaults['configs'].items():
+    for label, value in configs.items():
         Config.create(user=user, label=label, value=value)
 
     return user
