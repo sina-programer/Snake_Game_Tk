@@ -18,8 +18,7 @@ def beep():
 class BaseDialog(simpledialog.Dialog):
     def __init__(self, parent, title, app=None):
         self.parent = parent
-        if app:
-            self.app = app
+        self.app = app
 
         super().__init__(self.parent, title)
 
@@ -108,7 +107,7 @@ class ChangeUsernameDialog(BaseDialog):
         if new_username.strip():
             if new_username != old_username:
                 if not User.get_or_none(username=new_username):
-                    self.app.username_lbl.config(text=new_username)
+                    self.app.username.set(new_username)
                     User.update(username=new_username).where(User.username == self.app.user.username).execute()
                     self.app.user.username = new_username
                     self.destroy()
@@ -271,7 +270,7 @@ class BestScoresDialog(BaseDialog):
         sheet.align('center')
         sheet.hide(canvas='x_scrollbar')
 
-        scores = Score.select().where(Score.level == self.app.level.get()).order_by(Score.score.desc())
+        scores = Score.select().where(Score.level == self.app.game_frame.level.get()).order_by(Score.score.desc())
         for counter, score in enumerate(scores, 1):
             sheet.insert_row([score.user.username, score.score, score.datetime.date()])
 
@@ -298,7 +297,7 @@ class MyScoresDialog(BaseDialog):
         sheet.align('center')
         sheet.hide(canvas='x_scrollbar')
 
-        for score in Score.select().where(Score.level == self.app.level.get(),
+        for score in Score.select().where(Score.level == self.app.game_frame.level.get(),
                                           Score.user == self.app.user).order_by(Score.score.desc()):
 
             sheet.insert_row([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
@@ -363,7 +362,7 @@ class SettingDialog(BaseDialog):
         super().__init__(app.master, 'Setting', app)
 
     def body(self, frame):
-        self.level_var.set(self.app.level.get())
+        self.level_var.set(self.app.game_frame.level.get())
 
         tk.Label(frame, text='Level:').grid(row=1, column=1)
         tk.Scale(frame, from_=1, to=3, variable=self.level_var, orient=tk.HORIZONTAL).grid(row=1, column=2, columnspan=3, pady=12)
@@ -397,7 +396,7 @@ class SettingDialog(BaseDialog):
         return frame
 
     def apply(self):
-        if self.level_var.get() != self.app.level.get() and messagebox.askokcancel(
+        if self.level_var.get() != self.app.game_frame.level.get() and messagebox.askokcancel(
                 meta.TITLE, 'Are you sure you want to restart the game? (score will save)'):
             self.app.restart()
             self.app.set_level(self.level_var.get())
@@ -424,7 +423,7 @@ class SettingDialog(BaseDialog):
         self.head_color_btn.config(bg=Config.fetch(user=self.app.user, label='Head'))
         self.body_color_btn.config(bg=Config.fetch(user=self.app.user, label='Body'))
         self.bg_color_btn.config(bg=Config.fetch(user=self.app.user, label='Background'))
-        self.level_var.set(self.app.level.get())
+        self.level_var.set(self.app.game_frame.level.get())
 
 
 class AboutDialog(BaseDialog):
