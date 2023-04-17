@@ -37,21 +37,61 @@ class App:
         self.guide_lbl = tk.Label(self.game_frame, text='Press <enter> to start')
         self.guide_lbl.pack()
 
+    @property
+    def score(self):
+        return self.game_frame.score.get()
+
+    @score.setter
+    def score(self, value):
+        self.game_frame.score.set(value)
+
+    @property
+    def level(self):
+        return self.game_frame.level.get()
+
+    @level.setter
+    def level(self, value):
+        self.game_frame.level.set(value)
+
+    @property
+    def energy(self):
+        return self.game_frame.energy.get()
+
+    @energy.setter
+    def energy(self, value):
+        self.game_frame.energy.set(value)
+
+    @property
+    def best_score(self):
+        return self.game_frame.best_score.get()
+
+    @best_score.setter
+    def best_score(self, value):
+        self.game_frame.best_score.set(value)
+
+    @property
+    def username(self):
+        return self.game_frame.username.get()
+
+    @username.setter
+    def username(self, value):
+        self.game_frame.username.set(value)
+
     def restart(self):
-        if score := self.game_frame.score.get():  # auto save score when change level meanwhile game loop
-            Score.create(user=self.user, score=score, level=self.game_frame.level.get(), datetime=dt.datetime.now())
+        if score := self.score:  # auto save score when change level meanwhile game loop
+            Score.create(user=self.user, score=score, level=self.level, datetime=dt.datetime.now())
 
-        if score > self.game_frame.best_score.get():
-            self.game_frame.best_score.set(score)
+        if score > self.best_score:
+            self.best_score = score
 
-        self.game_frame.energy.set(meta.BASE_ENERGY)
-        self.game_frame.score.set(0)
+        self.energy = meta.BASE_ENERGY
+        self.score = 0
         self.snake.reset()
         self.bait.reset()
 
     def change_user(self, user):
         self.user = user
-        self.game_frame.username.set(self.user.username)
+        self.username = self.user.username
         self.snake.change_user(self.user)  # change colors too
         self.update_personalizations()
         self.set_level(Config.fetch(user=user, label='Level'))
@@ -68,11 +108,11 @@ class App:
 
     def update_best_score(self):
         try:
-            score = Score.select().where(Score.level == self.game_frame.level.get()).order_by(Score.score.desc()).get()
-            self.game_frame.best_score.set(score.score)
+            score = Score.select().where(Score.level == self.level).order_by(Score.score.desc()).get()
+            self.best_score = score.score
 
         except:
-            self.game_frame.best_score.set(0)
+            self.best_score = 0
 
     def check_head_and_body_collision(self):
         for body in self.snake.body:
@@ -85,22 +125,21 @@ class App:
         if model.check_collision(self.game_frame.canvas, self.snake.head, self.bait.item):
             self.bait.move()
             self.snake.grow()
-            self.game_frame.energy.set(self.game_frame.energy.get() + self.bait.score)
-            self.game_frame.score.set(self.game_frame.score.get() + 1)
+            self.energy += self.bait.score
+            self.score += 1
 
     def check_energy(self):
-        energy = self.game_frame.energy.get()
-        if energy > 0:
+        if self.energy > 0:
             if not self._pause:
-                self.game_frame.energy.set(energy - 1)
+                self.energy -= 1
         else:
             messagebox.showinfo(meta.TITLE, 'Your energies finished!')
             self.restart()
 
     def set_level(self, level):
-        self.game_frame.level.set(level)
-        self.game_frame.energy.set(meta.BASE_ENERGY)
-        self.delay = (150 - (self.game_frame.level.get() * 24))
+        self.level = level
+        self.energy = meta.BASE_ENERGY
+        self.delay = (150 - (self.level * 24))
 
         Config.update(value=level).where(Config.user == self.user, Config.label == 'Level').execute()
         self.update_best_score()
@@ -108,7 +147,7 @@ class App:
     def reset_scores(self):
         if messagebox.askokcancel(meta.TITLE, 'Are you sure you want to reset all your scores?'):
             Score.delete().where(Score.user == self.user).execute()
-            self.game_frame.best_score.set(0)
+            self.best_score = 0
             messagebox.showinfo(meta.TITLE, 'All your scores were reset!')
 
     def delete_account(self):
