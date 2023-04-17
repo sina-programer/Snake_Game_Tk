@@ -78,16 +78,17 @@ class App:
         self.game_frame.username.set(value)
 
     def restart(self):
-        if score := self.score:  # auto save score when change level meanwhile game loop
-            Score.create(user=self.user, score=score, level=self.level, datetime=dt.datetime.now())
+        if self.score:  # auto save score when changing level meanwhile playing
+            Score.create(user=self.user, score=self.score, level=self.level, datetime=dt.datetime.now())
 
-        if score > self.best_score:
-            self.best_score = score
+        if self.score > self.best_score:
+            self.best_score = self.score
 
         self.energy = meta.BASE_ENERGY
         self.score = 0
         self.snake.reset()
         self.bait.reset()
+        self._pause = True
 
     def change_user(self, user):
         self.user = user
@@ -108,8 +109,8 @@ class App:
 
     def update_best_score(self):
         try:
-            score = Score.select().where(Score.level == self.level).order_by(Score.score.desc()).get()
-            self.best_score = score.score
+            best_score = Score.select().where(Score.level == self.level, Score.user == self.user).order_by(Score.score.desc()).get()
+            self.best_score = best_score.score
 
         except:
             self.best_score = 0
@@ -155,7 +156,7 @@ class App:
             Score.delete().where(Score.user == self.user).execute()
             User.delete().where(User.username == self.user.username).execute()
             self.change_user(meta.default_user)
-            messagebox.showinfo(meta.TITLE, 'Your account deleted successfully!')
+            messagebox.showinfo(meta.TITLE, 'Your account has deleted successfully!')
 
     def start(self):
         self.master.unbind('<Return>')

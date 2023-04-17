@@ -96,7 +96,7 @@ class Snake:
         )
 
     def reset(self):
-        self.direction = None
+        self.direction = 'up'
         self.canvas.delete(self.head)
         self.head = self.canvas.create_rectangle(self.start_x - self.half_size,
                                                  self.start_y - self.half_size,
