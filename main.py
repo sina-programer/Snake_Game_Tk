@@ -13,17 +13,18 @@ import dialogs
 
 
 class App:
-    def __init__(self, master):
+    def __init__(self):
+        self.master = App.create_master()
+
         self.menus = {}
         self.delay = None
         self._pause = True
-        self.game_frame = frames.GameFrame(master)
+        self.game_frame = frames.GameFrame(self.master)
 
         self.user = meta.default_user
         self.snake = Snake(self.user, self.game_frame.canvas, size=16)
         self.bait = Bait(self.game_frame.canvas, size=16, score=30, timeout=60, color='green')
 
-        self.master = master
         self.master.config(menu=self.init_menu())
         self.master.bind('<Up>', lambda _: self.snake.set_direction('up'))
         self.master.bind('<Down>', lambda _: self.snake.set_direction('down'))
@@ -36,6 +37,8 @@ class App:
 
         self.guide_lbl = tk.Label(self.game_frame, text='Press <enter> to start')
         self.guide_lbl.pack()
+
+        self.master.mainloop()
 
     @property
     def score(self):
@@ -76,6 +79,17 @@ class App:
     @username.setter
     def username(self, value):
         self.game_frame.username.set(value)
+
+    @classmethod
+    def create_master(cls):
+        root = tk.Tk()
+        root.title(meta.TITLE)
+        root.geometry(get_geometry(root))
+        root.resizable(False, False)
+        if os.path.exists(meta.ICON_PATH):
+            root.iconbitmap(default=meta.ICON_PATH)
+
+        return root
 
     def restart(self):
         if self.score:  # auto save score when changing level meanwhile playing
@@ -230,12 +244,4 @@ def get_geometry(root):
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.title(meta.TITLE)
-    root.geometry(get_geometry(root))
-    root.resizable(False, False)
-    if os.path.exists(meta.ICON_PATH):
-        root.iconbitmap(default=meta.ICON_PATH)
-
-    app = App(root)
-    root.mainloop()
+    app = App()
