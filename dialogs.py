@@ -131,26 +131,14 @@ class SignupDialog(BaseDialog):
 
         self.frame = frames.SignupFrame(frame)
         self.frame.pack(pady=10, padx=10)
-        self.frame.combobox.config(values=list(map(lambda user: user.username, User.select())))
         self.frame.button.config(command=self.signup)
         self.bind('<Return>', lambda _: self.signup())
         self.resizable(False, False)
         beep()
 
     def signup(self):
-        username = self.frame.username.get()
-        password = model.hash(self.frame.password.get())
-
-        if username:
-            if not User.get_or_none(username=username):
-                model.create_user(username=username, password=password)
-                self.destroy()
-                messagebox.showinfo(meta.TITLE, 'Your account created successfully! \nnow you most sign in')
-
-            else:
-                messagebox.showwarning(meta.TITLE, 'Username already exists!')
-        else:
-            messagebox.showwarning(meta.TITLE, 'Please enter a username')
+        if self.frame.signup():
+            self.destroy()
 
     def signin(self):
         self.destroy()
@@ -178,25 +166,8 @@ class SigninDialog(BaseDialog):
         beep()
 
     def signin(self):
-        username = self.frame.username.get()
-        password = model.hash(self.frame.password.get())
-
-        user = User.get_or_none(username=username)
-        if user:
-            if self.app.user != user:
-                if (password == user.password) or user.is_default:
-                    self.app.restart()
-                    self.app.change_user(user)
-
-                    self.destroy()
-                    messagebox.showinfo(meta.TITLE, 'You logged in successfully!')
-
-                else:
-                    messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
-            else:
-                messagebox.showinfo(meta.TITLE, 'Can not sign in into the current user!')
-        else:
-            messagebox.showwarning(meta.TITLE, 'Please enter a valid user!')
+        if self.frame.signin(self.app):
+            self.destroy()
 
     def signup(self):
         self.destroy()

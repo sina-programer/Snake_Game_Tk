@@ -1,7 +1,9 @@
+from tkinter import messagebox
 from tkinter import ttk
 import tkinter as tk
 
 from database import User
+import model
 import meta
 
 
@@ -51,8 +53,9 @@ class GameFrame(tk.Frame):
 
 
 class SigninFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, app=None):
         super().__init__(master)
+        self.app = app
 
         self.username = tk.StringVar()
         self.password = tk.StringVar()
@@ -60,11 +63,11 @@ class SigninFrame(tk.Frame):
         self.pass_state.set('*')
 
         ttk.Label(self, text='Username:').grid(row=1, column=1, pady=7, padx=5)
-        self.combobox = ttk.Combobox(self, textvariable=self.username, width=20, values=list(map(lambda user: user.username, User.select())))
+        self.combobox = ttk.Combobox(self, textvariable=self.username, width=17, values=list(map(lambda user: user.username, User.select())))
         self.combobox.grid(row=1, column=2, pady=7, padx=5)
 
         ttk.Label(self, text='Password:').grid(row=2, column=1, pady=7)
-        pass_field = ttk.Entry(self, textvariable=self.password, show=self.pass_state.get(), width=23)
+        pass_field = ttk.Entry(self, textvariable=self.password, show=self.pass_state.get())
         pass_field.grid(row=2, column=2, pady=7)
 
         ttk.Checkbutton(
@@ -74,6 +77,31 @@ class SigninFrame(tk.Frame):
 
         self.button = ttk.Button(self, text='Sign in', width=10)
         self.button.grid(row=3, column=1, pady=5)
+
+        if self.app:
+            self.button.config(command=lambda: self.signin(self.app))
+
+    def signin(self, app=None):
+        username = self.username.get()
+        password = model.hash(self.password.get())
+
+        user = User.get_or_none(username=username)
+        if user:
+            if app.user != user:
+                if (password == user.password) or user.is_default:
+                    app.restart()
+                    app.change_user(user)
+                    messagebox.showinfo(meta.TITLE, 'You logged in successfully!')
+                    return True
+
+                else:
+                    messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
+            else:
+                messagebox.showinfo(meta.TITLE, 'Can not sign in into the current user!')
+        else:
+            messagebox.showwarning(meta.TITLE, 'Please enter a valid user!')
+
+        return False
 
 
 class SignupFrame(tk.Frame):
@@ -89,14 +117,13 @@ class SignupFrame(tk.Frame):
         self.pass_state.set('*')
 
         ttk.Label(self, text='Username:').grid(row=1, column=1, pady=7, padx=5)
-        self.combobox = ttk.Combobox(self, textvariable=self.username, width=20)
-        self.combobox.grid(row=1, column=2, pady=7, padx=5)
+        ttk.Entry(self, textvariable=self.username).grid(row=1, column=2, pady=7, padx=5)
 
         ttk.Label(self, text='Password:').grid(row=2, column=1, pady=7)
-        ttk.Entry(self, show='*', textvariable=self.password, width=23).grid(row=2, column=2, pady=7)
+        ttk.Entry(self, show='*', textvariable=self.password).grid(row=2, column=2, pady=7)
 
         ttk.Label(self, text='Confirm Password:').grid(row=3, column=1, pady=7)
-        confirm_pass_field = ttk.Entry(self, textvariable=self.confirm_password, show=self.pass_state.get(), width=23)
+        confirm_pass_field = ttk.Entry(self, textvariable=self.confirm_password, show=self.pass_state.get())
         confirm_pass_field.grid(row=3, column=2, pady=7)
 
         ttk.Checkbutton(
@@ -116,3 +143,19 @@ class SignupFrame(tk.Frame):
         else:
             self.button.config(state=tk.DISABLED)
 
+    def signup(self):
+        username = self.username.get()
+        password = model.hash(self.password.get())
+
+        if username:
+            if not User.get_or_none(username=username):
+                model.create_user(username=username, password=password)
+                messagebox.showinfo(meta.TITLE, 'Your account created successfully! \nnow you most sign in')
+                return True
+
+            else:
+                messagebox.showwarning(meta.TITLE, 'Username already exists!')
+        else:
+            messagebox.showwarning(meta.TITLE, 'Please enter a username')
+
+        return False
