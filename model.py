@@ -1,4 +1,10 @@
+import hashlib
+
 from database import User, Score, Config
+
+
+def hash(string):
+    return hashlib.sha256(string.encode()).hexdigest()
 
 
 def create_user(username, password, is_default=False):

@@ -1,7 +1,6 @@
 from tkinter import simpledialog, colorchooser, messagebox
 import tkinter as tk
 import webbrowser
-import hashlib
 import tksheet
 
 from database import User, Score, Config
@@ -69,9 +68,9 @@ class ChangePasswordDialog(BaseDialog):
         confirm_password = self.confirm_pass_var.get()
 
         if old_password.strip() and new_password.strip():
-            if self.app.user.password == hashlib.sha256(old_password.encode()).hexdigest():
+            if self.app.user.password == model.hash(old_password):
                 if new_password == confirm_password:
-                    new_password = hashlib.sha256(new_password.encode()).hexdigest()
+                    new_password = model.hash(new_password)
                     User.update(password=new_password).where(User.username == self.app.user.username).execute()
                     self.destroy()
                     messagebox.showinfo(meta.TITLE, 'Your password changed successfully!')
@@ -140,8 +139,7 @@ class SignupDialog(BaseDialog):
 
     def signup(self):
         username = self.frame.username.get()
-        password = self.frame.password.get()
-        password = hashlib.sha256(password.encode()).hexdigest()
+        password = model.hash(self.frame.password.get())
 
         if username:
             if not User.get_or_none(username=username):
@@ -181,8 +179,7 @@ class SigninDialog(BaseDialog):
 
     def signin(self):
         username = self.frame.username.get()
-        password = self.frame.password.get()
-        password = hashlib.sha256(password.encode()).hexdigest()
+        password = model.hash(self.frame.password.get())
 
         user = User.get_or_none(username=username)
         if user:
