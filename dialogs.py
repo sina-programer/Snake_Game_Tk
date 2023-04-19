@@ -5,6 +5,8 @@ import hashlib
 import tksheet
 
 from database import User, Score, Config
+import frames
+import model
 import meta
 
 
@@ -123,125 +125,69 @@ class ChangeUsernameDialog(BaseDialog):
 
 class SignupDialog(BaseDialog):
     def __init__(self, app):
-        self.user_var = tk.StringVar()
-        self.pass_var = tk.StringVar()
-        self.pass_var.trace('w', lambda *args: self.check_match())
-        self.confirm_pass_var = tk.StringVar()
-        self.confirm_pass_var.trace('w', lambda *args: self.check_match())
-
-        self.signup_btn = None
-        self.state_label = None
-
-        self.show_pass_state = tk.StringVar()
-        self.show_pass_state.set('*')
         super().__init__(app.master, 'Sign up', app)
 
     def body(self, frame):
-        tk.Label(frame, text='Username:').grid(row=0, column=1, pady=5)
-        tk.Entry(frame, textvariable=self.user_var).grid(row=0, column=2, pady=5)
+        self.config(menu=self.init_menu())
 
-        tk.Label(frame, text='Password:').grid(row=1, column=1, pady=5)
-        tk.Entry(frame, show='*', textvariable=self.pass_var).grid(row=1, column=2, pady=5)
-
-        tk.Label(frame, text='Confirm password:').grid(row=2, column=0, columnspan=2, pady=5)
-        confirm_pass_field = tk.Entry(frame, show=self.show_pass_state.get(), textvariable=self.confirm_pass_var)
-        confirm_pass_field.grid(row=2, column=2, pady=5)
-
-        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
-                       command=lambda *args: confirm_pass_field.config(show=self.show_pass_state.get())
-                       ).grid(row=3, column=0, columnspan=2, pady=3)
-
-        self.state_label = tk.Label(frame)
-        self.state_label.grid(row=3, column=2, pady=3)
-
-        self.signup_btn = tk.Button(frame, text='Sign up', width=10, state='disabled', command=self.signup)
-        self.signup_btn.grid(row=4, column=2, pady=5)
-        tk.Button(frame, text='Sign in', width=10, command=self.signin).grid(row=4, column=0, columnspan=2, pady=5)
-
+        self.frame = frames.SignupFrame(frame)
+        self.frame.pack(pady=10, padx=10)
+        self.frame.combobox.config(values=list(map(lambda user: user.username, User.select())))
+        self.frame.button.config(command=self.signup)
         self.bind('<Return>', lambda _: self.signup())
-
-        self.geometry('270x180')
         self.resizable(False, False)
         beep()
 
-        return frame
-
     def signup(self):
-        username = self.user_var.get()
-        password = self.pass_var.get()
+        username = self.frame.username.get()
+        password = self.frame.password.get()
         password = hashlib.sha256(password.encode()).hexdigest()
 
-        if not User.get_or_none(username=username):
-            from model import create_user
-            create_user(username=username, password=password)
-            self.destroy()
-            messagebox.showinfo(meta.TITLE, 'Your account created successfully! \nnow you most sign in')
+        if username:
+            if not User.get_or_none(username=username):
+                model.create_user(username=username, password=password)
+                self.destroy()
+                messagebox.showinfo(meta.TITLE, 'Your account created successfully! \nnow you most sign in')
 
+            else:
+                messagebox.showwarning(meta.TITLE, 'Username already exists!')
         else:
-            messagebox.showwarning(meta.TITLE, 'Username already exists!')
-
-    def check_match(self):
-        password = self.pass_var.get()
-        confirm_password = self.confirm_pass_var.get()
-
-        if not password or not confirm_password:
-            self.state_label.config(text='')
-            self.signup_btn.config(state='disabled')
-
-        elif password != confirm_password:
-            self.state_label.config(text='not match!', fg='red')
-            self.signup_btn.config(state='disabled')
-
-        else:
-            self.state_label.config(text='match!', fg='green')
-            self.signup_btn.config(state='normal')
+            messagebox.showwarning(meta.TITLE, 'Please enter a username')
 
     def signin(self):
         self.destroy()
         SigninDialog(self.app)
 
+    def init_menu(self):
+        menu = tk.Menu(self)
+        menu.add_command(label='Sign in', command=self.signin)
+
+        return menu
+
 
 class SigninDialog(BaseDialog):
     def __init__(self, app):
-        self.user_var = tk.StringVar()
-        self.pass_var = tk.StringVar()
-
-        self.show_pass_state = tk.StringVar()
-        self.show_pass_state.set('*')
         super().__init__(app.master, 'Sign in', app)
 
     def body(self, frame):
-        tk.Label(frame, text='Username:').grid(row=1, column=1, pady=5)
-        tk.Entry(frame, textvariable=self.user_var).grid(row=1, column=2, pady=5)
+        self.config(menu=self.init_menu())
 
-        tk.Label(frame, text='Password:').grid(row=2, column=1, pady=5)
-        pass_field = tk.Entry(frame, textvariable=self.pass_var, show=self.show_pass_state.get())
-        pass_field.grid(row=2, column=2, pady=5)
-
-        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
-                       command=lambda *args: pass_field.config(show=self.show_pass_state.get())
-                       ).grid(row=3, column=2, pady=5)
-
-        tk.Button(frame, text='Sign up', width=10, command=self.signup).grid(row=4, column=1, pady=5)
-        tk.Button(frame, text='Sign in', width=10, command=self.signin).grid(row=4, column=2, pady=5)
-
+        self.frame = frames.SigninFrame(frame)
+        self.frame.pack(pady=10, padx=10)
+        self.frame.button.config(command=self.signin)
         self.bind('<Return>', lambda _: self.signin())
-
-        self.geometry('250x150')
         self.resizable(False, False)
         beep()
 
-        return frame
-
     def signin(self):
-        username = self.user_var.get()
-        password = self.pass_var.get()
+        username = self.frame.username.get()
+        password = self.frame.password.get()
         password = hashlib.sha256(password.encode()).hexdigest()
 
         user = User.get_or_none(username=username)
         if user:
             if self.app.user != user:
-                if password == user.password or username == meta.defaults['username']:
+                if (password == user.password) or user.is_default:
                     self.app.restart()
                     self.app.change_user(user)
 
@@ -251,13 +197,19 @@ class SigninDialog(BaseDialog):
                 else:
                     messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
             else:
-                messagebox.showinfo(meta.TITLE, 'This is current user!')
+                messagebox.showinfo(meta.TITLE, 'Can not sign in into the current user!')
         else:
             messagebox.showwarning(meta.TITLE, 'Please enter a valid user!')
 
     def signup(self):
         self.destroy()
         SignupDialog(self.app)
+
+    def init_menu(self):
+        menu = tk.Menu(self)
+        menu.add_command(label='Sign up', command=self.signup)
+
+        return menu
 
 
 class BestScoresDialog(BaseDialog):
