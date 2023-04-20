@@ -1,11 +1,9 @@
 from tkinter import simpledialog, colorchooser, messagebox
 import tkinter as tk
-import webbrowser
 import tksheet
 
 from database import User, Score, Config
 import frames
-import model
 import meta
 
 
@@ -17,11 +15,16 @@ def beep():
 
 
 class BaseDialog(simpledialog.Dialog):
-    def __init__(self, parent, title, app=None):
-        self.parent = parent
+    def __init__(self, app, title):
         self.app = app
+        self.app.pause()
+        self.title = title
 
-        super().__init__(self.parent, title)
+        super().__init__(self.app.master, self.title)
+
+    def destroy(self):
+        self.forget(self)
+        self.app.pause()
 
     def buttonbox(self):
         pass
@@ -29,7 +32,7 @@ class BaseDialog(simpledialog.Dialog):
 
 class ChangePasswordDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Change Password', app)
+        super().__init__(app, 'Change Password')
 
     def body(self, frame):
         self.frame = frames.ChangePasswordFrame(frame)
@@ -46,7 +49,7 @@ class ChangePasswordDialog(BaseDialog):
 
 class ChangeUsernameDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Change Username', app)
+        super().__init__(app, 'Change Username')
 
     def body(self, frame):
         self.frame = frames.ChangeUsernameFrame(frame)
@@ -63,7 +66,7 @@ class ChangeUsernameDialog(BaseDialog):
 
 class SignupDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Sign up', app)
+        super().__init__(app, 'Sign up')
 
     def body(self, frame):
         self.config(menu=self.init_menu())
@@ -92,7 +95,7 @@ class SignupDialog(BaseDialog):
 
 class SigninDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Sign in', app)
+        super().__init__(app, 'Sign in')
 
     def body(self, frame):
         self.config(menu=self.init_menu())
@@ -121,7 +124,7 @@ class SigninDialog(BaseDialog):
 
 class BestScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, 'Best Scores', app)
+        super().__init__(app, 'Best Scores')
 
     def body(self, frame):
         sheet = tksheet.Sheet(self, headers=['User', 'Score', 'Date'])
@@ -148,7 +151,7 @@ class BestScoresDialog(BaseDialog):
 
 class MyScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, f'My Scores ({app.user.username})', app)
+        super().__init__(app, f'My Scores ({app.user.username})')
 
     def body(self, frame):
         sheet = tksheet.Sheet(self, headers=['Score', 'Date', 'Time'])
@@ -173,7 +176,7 @@ class MyScoresDialog(BaseDialog):
 
 class RecordsDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app.master, f'Records', app)
+        super().__init__(app, f'Records')
 
     def body(self, frame):
         sheet = tksheet.Sheet(frame, headers=['Level', 'Your record', 'Record'])
@@ -221,7 +224,7 @@ class SettingDialog(BaseDialog):
 
         self.level_var = tk.IntVar()
 
-        super().__init__(app.master, 'Setting', app)
+        super().__init__(app, 'Setting')
 
     def body(self, frame):
         self.level_var.set(self.app.level)
@@ -289,8 +292,8 @@ class SettingDialog(BaseDialog):
 
 
 class AboutDialog(BaseDialog):
-    def __init__(self, parent):
-        super().__init__(parent, 'About us')
+    def __init__(self, app):
+        super().__init__(app.master, 'About us')
 
     def body(self, frame):
         self.frame = frames.AboutUsFrame(frame)

@@ -225,7 +225,7 @@ class App:
         main_menu.add_cascade(label='Account Setting', menu=account_menu)
         main_menu.add_cascade(label='Scores', menu=scores_menu)
         main_menu.add_command(label='Setting', command=lambda: dialogs.SettingDialog(self))
-        main_menu.add_command(label='About us', command=lambda: dialogs.AboutDialog(self.master))
+        main_menu.add_command(label='About us', command=lambda: dialogs.AboutDialog(self))
 
         return main_menu
 
