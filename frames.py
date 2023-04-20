@@ -1,8 +1,10 @@
+from abc import ABC, abstractmethod
 from tkinter import messagebox, ttk
 import tkinter as tk
+import tksheet
 import webbrowser
 
-from database import User
+from database import User, Score, Config
 import model
 import meta
 
@@ -122,23 +124,23 @@ class SignupFrame(tk.Frame):
         ttk.Label(self, text='Password:').grid(row=2, column=1, pady=7)
         ttk.Entry(self, show='*', textvariable=self.password).grid(row=2, column=2, pady=7)
 
-        ttk.Label(self, text='Confirm Password:').grid(row=3, column=1, pady=7)
+        ttk.Label(self, text='Confirm Password:').grid(row=3, column=0, columnspan=2, pady=7)
         confirm_pass_field = ttk.Entry(self, textvariable=self.confirm_password, show=self.pass_state.get())
         confirm_pass_field.grid(row=3, column=2, pady=7)
 
         ttk.Checkbutton(
             self, text='Show password', variable=self.pass_state, onvalue='', offvalue='*',
             command=lambda *args: confirm_pass_field.config(show=self.pass_state.get())
-        ).grid(row=4, column=2, pady=5)
+        ).grid(row=4, column=0, columnspan=2, pady=5)
 
         self.button = ttk.Button(self, text='Sign up', width=10, state='disabled')
-        self.button.grid(row=4, column=1, pady=5)
+        self.button.grid(row=4, column=2, pady=5)
 
     def check_match(self):
         password = self.password.get()
         confirm_password = self.confirm_password.get()
 
-        if (password == confirm_password) and password:
+        if (password == confirm_password) and password.strip():
             self.button.config(state=tk.NORMAL)
         else:
             self.button.config(state=tk.DISABLED)
@@ -265,3 +267,81 @@ class AboutUsFrame(tk.Frame):
         tk.Label(self, text='This game has made by Sina.F').grid(row=1, column=1, columnspan=2, pady=10)
         tk.Button(self, text='GitHub', width=8, command=lambda: webbrowser.open(meta.LINKS['github'])).grid(row=2, column=1, padx=7)
         tk.Button(self, text='Telegram', width=8, command=lambda: webbrowser.open(meta.LINKS['telegram'])).grid(row=2, column=2, padx=7)
+
+
+class TableFrame(tk.Frame, ABC):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.sheet = tksheet.Sheet(self, headers=self.header)
+        self.sheet.hide(canvas='x_scrollbar')
+        self.sheet.align('center')
+        self.sheet.grid()
+        self.sheet.enable_bindings()
+        self.sheet.disable_bindings(meta.UNWANTED_BINDINGS)
+
+    def load(self, *args, **kwargs):
+        for row in self.fetch_data(*args, **kwargs):
+            self.sheet.insert_row(row)
+
+    @property
+    @abstractmethod
+    def header(self): pass
+
+    @abstractmethod
+    def fetch_data(self, *args, **kwargs): pass
+
+
+class BestScoresTable(TableFrame):
+    header = ['User', 'Score', 'Date']
+
+    @classmethod
+    def fetch_data(cls, level=2):
+        rows = []
+        scores = Score.select().where(Score.level == level).order_by(Score.score.desc())
+        for counter, score in enumerate(scores, 1):
+            rows.append([score.user.username, score.score, score.datetime.date()])
+
+            if counter >= meta.BEST_SCORES_LIMIT:
+                break
+
+        return rows
+
+
+class MyScoresTable(TableFrame):
+    header = ['Score', 'Date', 'Time']
+
+    @classmethod
+    def fetch_data(cls, user=meta.default_user):
+        rows = []
+        for score in Score.select().where(Score.level == Config.fetch(user=user, label='Level'),
+                                          Score.user == user).order_by(Score.score.desc()):
+            rows.append([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
+
+        return rows
+
+
+class RecordsTable(TableFrame):
+    header = ['Level', 'Your Record', 'Record']
+
+    @classmethod
+    def fetch_data(cls, user=meta.default_user):
+        rows = []
+        for level in range(1, 4):
+            try:
+                global_record = Score.select().where(Score.level == level).order_by(Score.score.desc()).get()
+            except Exception:
+                global_record = None
+
+            try:
+                user_record = Score.select().where(Score.level == level, Score.user == user).order_by(Score.score.desc()).get()
+            except Exception:
+                user_record = None
+
+            rows.append([
+                level,
+                user_record.score if user_record else '-',
+                f'{global_record.score} ({global_record.user.username})' if global_record else '-'
+            ])
+
+        return rows

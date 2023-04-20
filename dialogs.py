@@ -123,54 +123,26 @@ class SigninDialog(BaseDialog):
 
 class BestScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app, 'Best Scores')
+        super().__init__(app, f'Best Scores (level={app.level})')
 
     def body(self, frame):
-        sheet = tksheet.Sheet(self, headers=['User', 'Score', 'Date'])
-        sheet.pack(pady=5)
-        sheet.align('center')
-        sheet.hide(canvas='x_scrollbar')
-
-        scores = Score.select().where(Score.level == self.app.level).order_by(Score.score.desc())
-        for counter, score in enumerate(scores, 1):
-            sheet.insert_row([score.user.username, score.score, score.datetime.date()])
-
-            if counter >= meta.BEST_SCORES_LIMIT:
-                break
-
-        sheet.enable_bindings()
-        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
-
+        self.table = frames.BestScoresTable(frame)
+        self.table.load(level=self.app.level)
+        self.table.pack()
         self.resizable(False, False)
-        self.geometry('440x260')
         beep()
-
-        return frame
 
 
 class MyScoresDialog(BaseDialog):
     def __init__(self, app):
-        super().__init__(app, f'My Scores ({app.user.username})')
+        super().__init__(app, f'My Scores ({app.username} | level={app.level})')
 
     def body(self, frame):
-        sheet = tksheet.Sheet(self, headers=['Score', 'Date', 'Time'])
-        sheet.pack(pady=5)
-        sheet.align('center')
-        sheet.hide(canvas='x_scrollbar')
-
-        for score in Score.select().where(Score.level == self.app.level,
-                                          Score.user == self.app.user).order_by(Score.score.desc()):
-
-            sheet.insert_row([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
-
-        sheet.enable_bindings()
-        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
-
+        self.table = frames.MyScoresTable(frame)
+        self.table.load(user=self.app.user)
+        self.table.pack()
         self.resizable(False, False)
-        self.geometry('440x260')
         beep()
-
-        return frame
 
 
 class RecordsDialog(BaseDialog):
@@ -178,37 +150,11 @@ class RecordsDialog(BaseDialog):
         super().__init__(app, f'Records')
 
     def body(self, frame):
-        sheet = tksheet.Sheet(frame, headers=['Level', 'Your record', 'Record'])
-        sheet.grid()
-        sheet.align('center')
-        sheet.hide(canvas='x_scrollbar')
-
-        for level in range(1, 4):
-            try:
-                record = Score.select().where(Score.level == level).order_by(Score.score.desc()).get()
-            except Exception:
-                record = None
-
-            try:
-                score = Score.select().where(Score.level == level,
-                                             Score.user == self.app.user).order_by(Score.score.desc()).get()
-            except Exception:
-                score = None
-
-            sheet.insert_row([
-                level,
-                score.score if score else '-',
-                f'{record.score} ({record.user.username})' if record else '-'
-            ])
-
-        sheet.enable_bindings()
-        sheet.disable_bindings(meta.UNWANTED_BINDINGS)
-
+        self.table = frames.RecordsTable(frame)
+        self.table.load(user=self.app.user)
+        self.table.pack()
         self.resizable(False, False)
-        self.geometry('400x100')
         beep()
-
-        return frame
 
 
 class SettingDialog(BaseDialog):
