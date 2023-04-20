@@ -55,7 +55,7 @@ class GameFrame(tk.Frame):
 
 
 class SigninFrame(tk.Frame):
-    def __init__(self, master, app=None):
+    def __init__(self, master, app=None, bind=False):
         super().__init__(master)
         self.app = app
 
@@ -80,10 +80,14 @@ class SigninFrame(tk.Frame):
         self.button = ttk.Button(self, text='Sign in', width=10)
         self.button.grid(row=3, column=1, pady=5)
 
-        if self.app:
-            self.button.config(command=lambda: self.signin(self.app))
+        if bind and self.app:
+            self.button.config(command=self.signin)
+            self.bind('<Return>', lambda _: self.signin())
 
     def signin(self, app=None):
+        if app is None:
+            app = self.app
+
         username = self.username.get()
         password = model.hash(self.password.get())
 
@@ -107,7 +111,7 @@ class SigninFrame(tk.Frame):
 
 
 class SignupFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, bind=False):
         super().__init__(master)
 
         self.username = tk.StringVar()
@@ -135,6 +139,10 @@ class SignupFrame(tk.Frame):
 
         self.button = ttk.Button(self, text='Sign up', width=10, state='disabled')
         self.button.grid(row=4, column=2, pady=5)
+
+        if bind:
+            self.button.config(command=self.signup)
+            self.bind('<Return>', lambda _: self.signup())
 
     def check_match(self):
         password = self.password.get()
@@ -164,8 +172,9 @@ class SignupFrame(tk.Frame):
 
 
 class ChangePasswordFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, app=None, bind=False):
         super().__init__(master)
+        self.app = app
 
         self.old_password = tk.StringVar()
         self.new_password = tk.StringVar()
@@ -193,6 +202,10 @@ class ChangePasswordFrame(tk.Frame):
         self.button = ttk.Button(self, text='Change Password', state=tk.DISABLED, width=17)
         self.button.grid(row=4, column=3, pady=15)
 
+        if bind and self.app:
+            self.button.config(command=self.change_password)
+            self.bind('<Return>', lambda _: self.change_password())
+
     def check_match(self):
         new_password = self.new_password.get()
         confirm_password = self.confirm_password.get()
@@ -203,6 +216,9 @@ class ChangePasswordFrame(tk.Frame):
             self.button.config(state=tk.DISABLED)
 
     def change_password(self, app=None):
+        if app is None:
+            app = self.app
+
         old_password = self.old_password.get()
         new_password = self.new_password.get()
         confirm_password = self.confirm_password.get()
@@ -226,8 +242,9 @@ class ChangePasswordFrame(tk.Frame):
 
 
 class ChangeUsernameFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, app=None, bind=False):
         super().__init__(master)
+        self.app = app
 
         self.username = tk.StringVar()
 
@@ -237,7 +254,14 @@ class ChangeUsernameFrame(tk.Frame):
         self.button = ttk.Button(self, text='Change', width=12)
         self.button.grid(row=2, column=2, pady=5)
 
+        if bind and self.app:
+            self.button.config(command=self.change_username)
+            self.bind('<Return>', lambda _: self.change_username())
+
     def change_username(self, app=None):
+        if app is None:
+            app = self.app
+
         new_username = self.username.get()
         old_username = app.user.username
 
