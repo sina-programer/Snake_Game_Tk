@@ -18,9 +18,8 @@ class BaseDialog(simpledialog.Dialog):
     def __init__(self, app, title):
         self.app = app
         self.app.pause()
-        self.title = title
 
-        super().__init__(self.app.master, self.title)
+        super().__init__(self.app.master, title)
 
     def destroy(self):
         self.forget(self)
