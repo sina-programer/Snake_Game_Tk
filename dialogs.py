@@ -29,97 +29,36 @@ class BaseDialog(simpledialog.Dialog):
 
 class ChangePasswordDialog(BaseDialog):
     def __init__(self, app):
-        self.old_pass_var = tk.StringVar()
-        self.new_pass_var = tk.StringVar()
-        self.confirm_pass_var = tk.StringVar()
-
-        self.show_pass_state = tk.StringVar()
-        self.show_pass_state.set('*')
         super().__init__(app.master, 'Change Password', app)
 
     def body(self, frame):
-        tk.Label(frame, text='Old password:').grid(row=1, column=2, pady=5)
-        tk.Entry(frame, textvariable=self.old_pass_var).grid(row=1, column=3, pady=5)
-
-        tk.Label(frame, text='New password:').grid(row=2, column=2, pady=5)
-        tk.Entry(frame, show='*', textvariable=self.new_pass_var).grid(row=2, column=3, pady=5)
-
-        tk.Label(frame, text='Confirm password:').grid(row=3, column=1, columnspan=2, pady=5)
-        confirm_pass_field = tk.Entry(frame, textvariable=self.confirm_pass_var, show=self.show_pass_state.get())
-        confirm_pass_field.grid(row=3, column=3, pady=5)
-
-        tk.Checkbutton(frame, text='Show password', variable=self.show_pass_state, onvalue='', offvalue='*',
-                       command=lambda *args: confirm_pass_field.config(show=self.show_pass_state.get())
-                       ).grid(row=4, column=1, columnspan=2, pady=3)
-
-        tk.Button(frame, text='Change Password', width=15, command=self.change_password).grid(row=4, column=3, pady=15)
-
+        self.frame = frames.ChangePasswordFrame(frame)
+        self.frame.pack(pady=10, padx=10)
+        self.frame.button.config(command=self.change_password)
         self.bind('<Return>', lambda _: self.change_password())
-
-        self.geometry('270x160')
         self.resizable(False, False)
         beep()
 
-        return frame
-
     def change_password(self):
-        old_password = self.old_pass_var.get()
-        new_password = self.new_pass_var.get()
-        confirm_password = self.confirm_pass_var.get()
-
-        if old_password.strip() and new_password.strip():
-            if self.app.user.password == model.hash(old_password):
-                if new_password == confirm_password:
-                    new_password = model.hash(new_password)
-                    User.update(password=new_password).where(User.username == self.app.user.username).execute()
-                    self.destroy()
-                    messagebox.showinfo(meta.TITLE, 'Your password changed successfully!')
-
-                else:
-                    messagebox.showwarning(meta.TITLE, 'Passwords not match!')
-            else:
-                messagebox.showwarning(meta.TITLE, 'Your password is incorrect!')
-        else:
-            messagebox.showwarning(meta.TITLE, 'Password field is empty!')
+        if self.frame.change_password(app=self.app):
+            self.destroy()
 
 
 class ChangeUsernameDialog(BaseDialog):
     def __init__(self, app):
-        self.user_var = tk.StringVar()
         super().__init__(app.master, 'Change Username', app)
 
     def body(self, frame):
-        tk.Label(frame, text='New Username:').grid(row=1, column=1, pady=10, padx=10)
-        tk.Entry(frame, textvariable=self.user_var).grid(row=1, column=2, pady=5)
-        tk.Button(frame, text='Change', width=12, command=self.change_username).grid(row=2, column=2, pady=5)
-
+        self.frame = frames.ChangeUsernameFrame(frame)
+        self.frame.pack(pady=10, padx=10)
+        self.frame.button.config(command=self.change_username)
         self.bind('<Return>', lambda _: self.change_username())
-
-        self.geometry('270x90')
         self.resizable(False, False)
         beep()
 
-        return frame
-
     def change_username(self):
-        new_username = self.user_var.get()
-        old_username = self.app.user.username
-
-        if new_username.strip():
-            if new_username != old_username:
-                if not User.get_or_none(username=new_username):
-                    self.app.username.set(new_username)
-                    User.update(username=new_username).where(User.username == self.app.user.username).execute()
-                    self.app.user.username = new_username
-                    self.destroy()
-                    messagebox.showinfo(meta.TITLE, f'Your username changed from <{old_username}> to <{new_username}>')
-
-                else:
-                    messagebox.showwarning(meta.TITLE, 'Username already exists!')
-            else:
-                messagebox.showwarning(meta.TITLE, "You can't change your username to the current username!")
-        else:
-            messagebox.showwarning(meta.TITLE, 'Username field is empty!')
+        if self.frame.change_username(self.app):
+            self.destroy()
 
 
 class SignupDialog(BaseDialog):
@@ -351,18 +290,10 @@ class SettingDialog(BaseDialog):
 
 class AboutDialog(BaseDialog):
     def __init__(self, parent):
-        beep()
         super().__init__(parent, 'About us')
 
     def body(self, frame):
-        tk.Label(frame, text='This game made by Sina.f').grid(row=1, column=1, columnspan=2, pady=15)
-
-        tk.Button(frame, text='GitHub', width=8, command=lambda: webbrowser.open(meta.LINKS['github'])
-                  ).grid(row=2, column=1, padx=7)
-        tk.Button(frame, text='Telegram', width=8, command=lambda: webbrowser.open(meta.LINKS['telegram'])
-                  ).grid(row=2, column=2, padx=7)
-
-        self.geometry('220x100')
+        self.frame = frames.AboutUsFrame(frame)
+        self.frame.pack(pady=10, padx=10)
         self.resizable(False, False)
-
-        return frame
+        beep()
