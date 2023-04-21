@@ -27,9 +27,7 @@ you can play in 3 level, it's up to your power 🙂 <br>
 ![preview](/Files/preview.png)
 
 ## Reach Me:
-- [sina_programer](https://t.me/sina_programer) in telegram
+- [sina_programer](https://t.me/sina_programer) in telegram (when texting, please mention that you are coming from GitHub)
 
 ## See Also:
-- [X Polygon](https://github.com/sina-programer/X_Polygon)
-- [File Hider](https://github.com/sina-programer/File_Hider)
-- [Background Changer](https://github.com/sina-programer/Background_Changer)
+- [Python Mini Projects](https://github.com/sina-programer/Python-Mini-Projects) (a lot of thrilling stuff)
