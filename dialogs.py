@@ -1,6 +1,5 @@
 from tkinter import simpledialog, colorchooser, messagebox
 import tkinter as tk
-import tksheet
 
 from database import User, Score, Config
 import frames
@@ -178,18 +177,15 @@ class SettingDialog(BaseDialog):
         tk.Scale(frame, from_=1, to=3, variable=self.level_var, orient=tk.HORIZONTAL).grid(row=1, column=2, columnspan=3, pady=12)
 
         tk.Label(frame, text='Snake Head Color:', state=self.state).grid(row=2, column=1, columnspan=3, pady=5)
-        self.head_color_btn = tk.Button(frame, width=2, command=self.set_head_color, state=self.state,
-                                        bg=Config.fetch(user=self.app.user, label='Head'))
+        self.head_color_btn = tk.Button(frame, width=2, command=self.set_head_color, state=self.state, bg=Config.fetch(user=self.app.user, label='Head'))
         self.head_color_btn.grid(row=2, column=4, pady=5)
 
         tk.Label(frame, text='Snake Body Color:', state=self.state).grid(row=3, column=1, columnspan=3, pady=5)
-        self.body_color_btn = tk.Button(frame, width=2, command=self.set_body_color, state=self.state,
-                                        bg=Config.fetch(user=self.app.user, label='Body'))
+        self.body_color_btn = tk.Button(frame, width=2, command=self.set_body_color, state=self.state, bg=Config.fetch(user=self.app.user, label='Body'))
         self.body_color_btn.grid(row=3, column=4, pady=5)
 
         tk.Label(frame, text='Background Color:', state=self.state).grid(row=4, column=1, columnspan=3, pady=5)
-        self.bg_color_btn = tk.Button(frame, width=2, command=self.set_bg_color, state=self.state,
-                                      bg=Config.fetch(user=self.app.user, label='Background'))
+        self.bg_color_btn = tk.Button(frame, width=2, command=self.set_bg_color, state=self.state, bg=Config.fetch(user=self.app.user, label='Background'))
         self.bg_color_btn.grid(row=4, column=4, pady=5)
 
         tk.Button(frame, text='Reset', width=10, command=self.reset).grid(row=5, column=1, columnspan=2, pady=20, padx=5)
@@ -206,8 +202,7 @@ class SettingDialog(BaseDialog):
         return frame
 
     def apply(self):
-        if self.level_var.get() != self.app.level and messagebox.askokcancel(
-                meta.TITLE, 'Are you sure you want to restart the game? (score will save)'):
+        if self.level_var.get() != self.app.level and messagebox.askokcancel(meta.TITLE, 'Are you sure you want to restart the game? (score will save)'):
             self.app.restart()
             self.app.set_level(self.level_var.get())
 

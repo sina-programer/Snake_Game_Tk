@@ -47,12 +47,10 @@ def get_coords(x, y, size):
     """ return coords of an object from center & size """
 
     half_size = size / 2
-    return [
-        x - half_size,
-        y - half_size,
-        x + half_size,
-        y + half_size
-    ]
+    return x - half_size, \
+           y - half_size, \
+           x + half_size, \
+           y + half_size
 
 
 def move(canvas, item, x, y):
