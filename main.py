@@ -104,6 +104,7 @@ class App:
             self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
             self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
 
+            self.set_level(self.login_frame.level.get())
             self.login_frame.destroy()
 
             self.menus['main'].entryconfig('Account Setting', state=tk.NORMAL)

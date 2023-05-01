@@ -59,6 +59,13 @@ class LoginFrame(tk.Frame):
 
         tk.Label(self, text='Snake Game', font=meta.FONTS['large']).pack(pady=75)
 
+        self.level = tk.IntVar()
+        self.level.set(2)
+        level_frame = tk.Frame(self)
+        level_frame.pack()
+        tk.Label(level_frame, text='Level:').pack(side=tk.LEFT, padx=10)
+        tk.Scale(level_frame, from_=1, to=3, variable=self.level, orient=tk.HORIZONTAL).pack(side=tk.RIGHT, padx=5)
+
         self.signin_frame = SigninFrame(self)
         self.signin_frame.pack(pady=25)
 
