@@ -12,7 +12,6 @@ import meta
 class GameFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.pack()
 
         self.score = tk.IntVar()
         self.level = tk.IntVar()
@@ -27,7 +26,7 @@ class GameFrame(tk.Frame):
         level_frame = tk.Frame(labels_frame)
         energy_frame = tk.Frame(labels_frame)
 
-        labels_frame.pack(pady=20)
+        labels_frame.pack(pady=25)
         score_frame.grid(row=1, column=1, padx=15)
         bestscore_frame.grid(row=2, column=1, padx=15)
         username_frame.grid(row=1, column=2, padx=15, rowspan=2)
@@ -51,7 +50,27 @@ class GameFrame(tk.Frame):
 
 
         self.canvas = tk.Canvas(self, width=meta.FRAME_WIDTH, height=meta.FRAME_HEIGHT, highlightthickness=1.5, highlightbackground='black')
-        self.canvas.pack(pady=5)
+        self.canvas.pack()
+
+
+class LoginFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        tk.Label(self, text='Snake Game', font=meta.FONTS['large']).pack(pady=75)
+
+        self.signin_frame = SigninFrame(self)
+        self.signin_frame.pack(pady=25)
+
+        self.signup_frame = SignupFrame(self)
+        self.signup_frame.pack(pady=25)
+        self.signup_frame.button.config(command=self.signup)
+
+        tk.Frame(self, width=meta.WIDTH, height=meta.HEIGHT).pack()  # fill the screen
+
+    def signup(self):
+        if self.signup_frame.signup():
+            self.signin_frame.update_users()
 
 
 class SigninFrame(tk.Frame):
@@ -65,8 +84,9 @@ class SigninFrame(tk.Frame):
         self.pass_state.set('*')
 
         ttk.Label(self, text='Username:').grid(row=1, column=1, pady=7, padx=5)
-        self.combobox = ttk.Combobox(self, textvariable=self.username, width=17, values=list(map(lambda user: user.username, User.select())))
+        self.combobox = ttk.Combobox(self, textvariable=self.username, width=17)
         self.combobox.grid(row=1, column=2, pady=7, padx=5)
+        self.update_users()
 
         ttk.Label(self, text='Password:').grid(row=2, column=1, pady=7)
         pass_field = ttk.Entry(self, textvariable=self.password, show=self.pass_state.get())
@@ -83,6 +103,9 @@ class SigninFrame(tk.Frame):
         if bind and self.app:
             self.button.config(command=self.signin)
             self.bind('<Return>', lambda _: self.signin())
+
+    def update_users(self):
+        self.combobox.config(values=list(map(lambda user: user.username, User.select())))
 
     def signin(self, app=None):
         if app is None:

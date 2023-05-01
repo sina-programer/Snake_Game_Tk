@@ -19,7 +19,13 @@ class App:
         self.menus = {}
         self.delay = None
         self._pause = True
+
+        self.login_frame = frames.LoginFrame(self.master)
         self.game_frame = frames.GameFrame(self.master)
+        self.login_frame.grid(row=0, column=0)
+        self.game_frame.grid(row=0, column=0)
+        self.login_frame.tkraise()
+        self.login_frame.signin_frame.button.config(command=self.signin)
 
         self.user = meta.default_user
         self.snake = Snake(self.user, self.game_frame.canvas, size=16)
@@ -31,13 +37,14 @@ class App:
         self.master.bind('<Left>', lambda _: self.snake.set_direction('left'))
         self.master.bind('<Right>', lambda _: self.snake.set_direction('right'))
         self.master.bind('<Escape>', lambda _: self.pause())
-        self.master.bind('<Return>', lambda _: self.start())
 
-        self.change_user(self.user)
+        self.menus['main'].entryconfig('Account Setting', state=tk.DISABLED)
+        self.menus['main'].entryconfig('Scores', state=tk.DISABLED)
+        self.menus['main'].entryconfig('Setting', state=tk.DISABLED)
+        self.menus['main'].entryconfig('About us', state=tk.DISABLED)
 
         self.guide_lbl = tk.Label(self.game_frame, text='Press <enter> to start')
-        self.guide_lbl.pack()
-
+        self.change_user(self.user)
         self.master.mainloop()
 
     @property
@@ -90,6 +97,19 @@ class App:
             root.iconbitmap(default=meta.ICON_PATH)
 
         return root
+
+    def signin(self):
+        if self.login_frame.signin_frame.signin(app=self):
+            self.login_frame.destroy()
+            self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
+            self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
+            self.master.bind('<Return>', lambda _: self.start())
+            self.guide_lbl.pack()
+
+            self.menus['main'].entryconfig('Account Setting', state=tk.NORMAL)
+            self.menus['main'].entryconfig('Scores', state=tk.NORMAL)
+            self.menus['main'].entryconfig('Setting', state=tk.NORMAL)
+            self.menus['main'].entryconfig('About us', state=tk.NORMAL)
 
     def restart(self):
         if self.score:  # auto save score when changing level meanwhile playing
@@ -204,8 +224,6 @@ class App:
         self.menus['account'] = account_menu
         self.menus['manage'] = manage_menu
 
-        self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
-        self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
         account_menu.add_command(label='Sign in', command=lambda: dialogs.SigninDialog(self), accelerator="Ctrl+I")
         account_menu.add_command(label='Sign up', command=lambda: dialogs.SignupDialog(self), accelerator="Ctrl+U")
         account_menu.add_separator()
