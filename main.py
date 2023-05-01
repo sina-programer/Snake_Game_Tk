@@ -43,7 +43,7 @@ class App:
         self.menus['main'].entryconfig('Setting', state=tk.DISABLED)
         self.menus['main'].entryconfig('About us', state=tk.DISABLED)
 
-        self.guide_lbl = tk.Label(self.game_frame, text='Press <enter> to start')
+        self.guide_text_id = self.game_frame.canvas.create_text(meta.FRAME_WIDTH // 2, meta.FRAME_HEIGHT // 2 - 50, text='Press <enter> to start the game', font=meta.FONTS['medium'])
         self.change_user(self.user)
         self.master.mainloop()
 
@@ -100,11 +100,11 @@ class App:
 
     def signin(self):
         if self.login_frame.signin_frame.signin(app=self):
-            self.login_frame.destroy()
+            self.master.bind('<Return>', lambda _: self.start())
             self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
             self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
-            self.master.bind('<Return>', lambda _: self.start())
-            self.guide_lbl.pack()
+
+            self.login_frame.destroy()
 
             self.menus['main'].entryconfig('Account Setting', state=tk.NORMAL)
             self.menus['main'].entryconfig('Scores', state=tk.NORMAL)
@@ -193,10 +193,10 @@ class App:
             messagebox.showinfo(meta.TITLE, 'Your account has deleted successfully!')
 
     def start(self):
+        self.game_frame.canvas.delete(self.guide_text_id)
         self.master.unbind('<Return>')
         self.snake.set_direction('up')
         self._pause = False
-        self.guide_lbl.pack_forget()
         self.game_loop()
 
     def game_loop(self):
