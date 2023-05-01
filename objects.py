@@ -52,6 +52,7 @@ class Snake:
     def __init__(self, canvas, size=meta.UNIT_SIZE, head_color='black', body_color='gray'):
         self.body = []
         self.canvas = canvas
+        self.last_direction = 'up'
         self.direction = 'up'
         self.size = size
         self.head_color = head_color
@@ -68,6 +69,7 @@ class Snake:
         }
 
     def move(self):
+        self.last_direction = self.direction
         aim = self.aims[self.direction]
         last_pos = model.get_position(self.canvas, self.head)
         self.canvas.move(self.head, *aim)
@@ -89,6 +91,7 @@ class Snake:
 
     def reset(self):
         self.direction = 'up'
+        self.last_direction = 'up'
         self.canvas.delete(self.head)
         self.head = self.create_quad(self.start_x, self.start_y, color=self.head_color)
         for body in self.body:
@@ -106,7 +109,7 @@ class Snake:
 
     def set_direction(self, direction):
         if direction in self.aims.keys():
-            if {self.direction, direction} not in Snake.opposites:
+            if {self.last_direction, direction} not in Snake.opposites:
                 self.direction = direction
 
     def check_inside(self):
