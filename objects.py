@@ -1,21 +1,19 @@
 import random
+
 import model
 import meta
 
-from database import Config
-
 
 class Bait:
-    def __init__(self, canvas, size, score: 'score for eating', timeout, color):
-        self.size = size
-        self.half_size = self.size / 2
-        self.score = score
+    def __init__(self, canvas, energy, timeout, color, size=meta.UNIT_SIZE):
+        self.canvas = canvas
+        self.energy = energy
         self.timeout = timeout
         self.timer = timeout
-        self.canvas = canvas
+        self.size = size
+        self.half_size = self.size / 2
 
-        self.x = random.randrange(self.half_size, meta.FRAME_WIDTH, self.size)
-        self.y = random.randrange(self.half_size, meta.FRAME_HEIGHT, self.size)
+        self.x, self.y = self.get_random_pos()
         self.item = self.canvas.create_rectangle(self.x - self.half_size,
                                                  self.y - self.half_size,
                                                  self.x + self.half_size,
@@ -24,10 +22,14 @@ class Bait:
 
     def move(self):
         self.timer = self.timeout
-
-        self.x = random.randrange(self.half_size, (meta.FRAME_WIDTH - (self.size + self.half_size)), self.size)
-        self.y = random.randrange(self.half_size, (meta.FRAME_WIDTH - (self.size + self.half_size)), self.size)
+        self.x, self.y = self.get_random_pos()
         model.move(self.canvas, self.item, self.x, self.y)
+
+    def get_random_pos(self):
+        return (
+            random.randrange(self.half_size, meta.CANVAS_WIDTH, self.size),
+            random.randrange(self.half_size, meta.CANVAS_HEIGHT, self.size)
+        )
 
     def reset(self):
         self.move()
@@ -47,20 +49,17 @@ class Snake:
         {'left', 'right'}
     ]
 
-    def __init__(self, user, canvas, size):
+    def __init__(self, canvas, size=meta.UNIT_SIZE, head_color='black', body_color='gray'):
         self.body = []
-        self.user = user
         self.canvas = canvas
-        self.direction = None
+        self.direction = 'up'
         self.size = size
+        self.head_color = head_color
+        self.body_color = body_color
         self.half_size = self.size / 2  # to don't div every time
-        self.start_x = (meta.FRAME_WIDTH / 2) - self.half_size
-        self.start_y = (meta.FRAME_HEIGHT / 2) - self.half_size
-        self.head = self.canvas.create_rectangle(self.start_x - self.half_size,
-                                                 self.start_y - self.half_size,
-                                                 self.start_x + self.half_size,
-                                                 self.start_y + self.half_size,
-                                                 fill=Config.fetch(user=self.user, label='Head'))
+        self.start_x = meta.CANVAS_WIDTH / 2  # for odd N
+        self.start_y = meta.CANVAS_HEIGHT / 2
+        self.head = self.create_quad(self.start_x, self.start_y, color=self.head_color)
         self.aims = {
             'up': (0, -self.size),
             'down': (0, self.size),
@@ -69,50 +68,44 @@ class Snake:
         }
 
     def move(self):
-        aim = self.aims.get(self.direction, None)
-        if aim is not None:
-            last_pos = model.get_position(self.canvas, self.head)
-            self.canvas.move(self.head, *aim)
+        aim = self.aims[self.direction]
+        last_pos = model.get_position(self.canvas, self.head)
+        self.canvas.move(self.head, *aim)
 
-            for body in self.body:
-                temp_pos = model.get_position(self.canvas, body)
-                model.move(self.canvas, body, *last_pos)
-                last_pos = temp_pos
+        for body in self.body:
+            temp_pos = model.get_position(self.canvas, body)
+            model.move(self.canvas, body, *last_pos)
+            last_pos = temp_pos
 
         self.check_inside()
 
     def grow(self):
-        aim = self.aims.get(self.direction, None)
+        aim = self.aims[self.direction]
         x, y = model.get_position(self.canvas, self.head)
         x -= aim[0]
         y -= aim[1]
 
-        self.body.append(
-            self.canvas.create_rectangle(x - self.half_size,
-                                         y - self.half_size,
-                                         x + self.half_size,
-                                         y + self.half_size,
-                                         fill=Config.fetch(user=self.user, label='Body'))
-        )
+        self.body.append(self.create_quad(x, y, color=self.body_color))
 
     def reset(self):
         self.direction = 'up'
         self.canvas.delete(self.head)
-        self.head = self.canvas.create_rectangle(self.start_x - self.half_size,
-                                                 self.start_y - self.half_size,
-                                                 self.start_x + self.half_size,
-                                                 self.start_y + self.half_size,
-                                                 fill=Config.fetch(user=self.user, label='Head'))
+        self.head = self.create_quad(self.start_x, self.start_y, color=self.head_color)
         for body in self.body:
             self.canvas.delete(body)
         self.body = []
 
+    def create_quad(self, x, y, color=None):
+        return self.canvas.create_rectangle(
+            x - self.half_size,
+            y - self.half_size,
+            x + self.half_size,
+            y + self.half_size,
+            fill=color
+        )
+
     def set_direction(self, direction):
         if direction in self.aims.keys():
-            # if (self.direction == 'up' and aim != 'down') or \
-            #    (self.direction == 'down' and aim != 'up') or \
-            #    (self.direction == 'left' and aim != 'right') or \
-            #    (self.direction == 'right' and aim != 'left'):
             if {self.direction, direction} not in Snake.opposites:
                 self.direction = direction
 
@@ -120,28 +113,20 @@ class Snake:
         coords = self.canvas.coords(self.head)
 
         if coords[0] < 0:  # left
-            self.canvas.move(self.head, meta.FRAME_WIDTH, 0)
-        elif coords[2] > meta.FRAME_WIDTH:  # right
-            self.canvas.move(self.head, -meta.FRAME_WIDTH, 0)
+            self.canvas.move(self.head, meta.CANVAS_WIDTH, 0)
+        elif coords[2] > meta.CANVAS_WIDTH:  # right
+            self.canvas.move(self.head, -meta.CANVAS_WIDTH, 0)
 
         if coords[1] < 0:  # up
-            self.canvas.move(self.head, 0, meta.FRAME_HEIGHT)
-        elif coords[3] > meta.FRAME_HEIGHT:  # down
-            self.canvas.move(self.head, 0, -meta.FRAME_HEIGHT)
-
-    def change_user(self, user):
-        if self.user != user:
-            self.user = user
-            self.change_head_color(Config.fetch(user=self.user, label='Head'))
-            self.change_body_color(Config.fetch(user=self.user, label='Body'))
+            self.canvas.move(self.head, 0, meta.CANVAS_HEIGHT)
+        elif coords[3] > meta.CANVAS_HEIGHT:  # down
+            self.canvas.move(self.head, 0, -meta.CANVAS_HEIGHT)
 
     def change_body_color(self, code):
-        Config.update(value=code).where(Config.user == self.user, Config.label == 'Body').execute()
-
+        self.body_color = code
         for body in self.body:
-            self.canvas.itemconfig(body, fill=code)
+            self.canvas.itemconfig(body, fill=self.body_color)
 
     def change_head_color(self, code):
-        Config.update(value=code).where(Config.user == self.user, Config.label == 'Head').execute()
-
-        self.canvas.itemconfig(self.head, fill=code)
+        self.head_color = code
+        self.canvas.itemconfig(self.head, fill=self.head_color)

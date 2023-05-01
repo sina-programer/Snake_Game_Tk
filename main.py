@@ -28,8 +28,8 @@ class App:
         self.login_frame.signin_frame.button.config(command=self.signin)
 
         self.user = meta.default_user
-        self.snake = Snake(self.user, self.game_frame.canvas, size=16)
-        self.bait = Bait(self.game_frame.canvas, size=16, score=30, timeout=60, color='green')
+        self.snake = Snake(self.game_frame.canvas)
+        self.bait = Bait(self.game_frame.canvas, energy=30, timeout=60, color='green')
 
         self.master.config(menu=self.init_menu())
         self.master.bind('<Up>', lambda _: self.snake.set_direction('up'))
@@ -43,7 +43,7 @@ class App:
         self.menus['main'].entryconfig('Setting', state=tk.DISABLED)
         self.menus['main'].entryconfig('About us', state=tk.DISABLED)
 
-        self.guide_text_id = self.game_frame.canvas.create_text(meta.FRAME_WIDTH // 2, meta.FRAME_HEIGHT // 2 - 50, text='Press <enter> to start the game', font=meta.FONTS['medium'])
+        self.guide_text_id = self.game_frame.canvas.create_text(meta.CANVAS_WIDTH//2, meta.CANVAS_HEIGHT//2 - (meta.UNIT_SIZE*2), text='Press <enter> to start the game', font=meta.FONTS['medium'])
         self.change_user(self.user)
         self.master.mainloop()
 
@@ -127,7 +127,6 @@ class App:
     def change_user(self, user):
         self.user = user
         self.username = self.user.username
-        self.snake.change_user(self.user)  # change colors too
         self.update_personalizations()
         self.set_level(Config.fetch(user=user, label='Level'))
 
@@ -160,7 +159,7 @@ class App:
         if model.check_collision(self.game_frame.canvas, self.snake.head, self.bait.item):
             self.bait.move()
             self.snake.grow()
-            self.energy += self.bait.score
+            self.energy += self.bait.energy
             self.score += 1
 
     def check_energy(self):

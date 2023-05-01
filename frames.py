@@ -26,7 +26,7 @@ class GameFrame(tk.Frame):
         level_frame = tk.Frame(labels_frame)
         energy_frame = tk.Frame(labels_frame)
 
-        labels_frame.pack(pady=25)
+        labels_frame.pack(pady=20)
         score_frame.grid(row=1, column=1, padx=15)
         bestscore_frame.grid(row=2, column=1, padx=15)
         username_frame.grid(row=1, column=2, padx=15, rowspan=2)
@@ -40,7 +40,7 @@ class GameFrame(tk.Frame):
         tk.Label(bestscore_frame, textvariable=self.best_score, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
         tk.Label(username_frame, text='User:', font=meta.FONTS['large']).pack(side=tk.TOP)
-        tk.Label(username_frame, textvariable=self.username, font=meta.FONTS['large_italic'], width=13).pack(side=tk.BOTTOM)
+        tk.Label(username_frame, textvariable=self.username, font=meta.FONTS['large_italic'], width=11).pack(side=tk.BOTTOM)
 
         tk.Label(level_frame, text='Level:', font=meta.FONTS['medium']).pack(side=tk.LEFT, padx=5)
         tk.Label(level_frame, textvariable=self.level, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
@@ -49,8 +49,8 @@ class GameFrame(tk.Frame):
         tk.Label(energy_frame, textvariable=self.energy, font=meta.FONTS['medium']).pack(side=tk.RIGHT)
 
 
-        self.canvas = tk.Canvas(self, width=meta.FRAME_WIDTH, height=meta.FRAME_HEIGHT, highlightthickness=1.5, highlightbackground='black')
-        self.canvas.pack()
+        self.canvas = tk.Canvas(self, width=meta.CANVAS_WIDTH, height=meta.CANVAS_HEIGHT, highlightthickness=1, highlightbackground='black')
+        self.canvas.pack(padx=10)
 
 
 class LoginFrame(tk.Frame):
