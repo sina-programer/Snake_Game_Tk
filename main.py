@@ -27,7 +27,7 @@ class App:
         self.login_frame.tkraise()
         self.login_frame.signin_frame.button.config(command=self.signin)
 
-        self.user = meta.default_user
+        self.user = None
         self.snake = Snake(self.game_frame.canvas)
         self.bait = Bait(self.game_frame.canvas, energy=30, timeout=60, color='green')
 
@@ -44,7 +44,6 @@ class App:
         self.menus['main'].entryconfig('About us', state=tk.DISABLED)
 
         self.guide_text_id = self.game_frame.canvas.create_text(meta.CANVAS_WIDTH//2, meta.CANVAS_HEIGHT//2 - (meta.UNIT_SIZE*2), text='Press <enter> to start the game', font=meta.FONTS['medium'])
-        self.change_user(self.user)
         self.master.mainloop()
 
     @property
