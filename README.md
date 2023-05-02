@@ -36,8 +36,7 @@ you can play in 3 level, it's up to you 🙂 <br> <br>
 - peewee `pip install peewee`
 
 ### Preview:
-![Login Preview](preview1.png "Login Frame")
-![Game Preview](preview2.png "Game Frame")
+<img alt="Login Preview" src="preview1.png" title="Login Frame" width="45%"/> <img alt="Game Preview" src="preview2.png" title="Game Frame" width="45%"/>
 
 ## Reach Me:
 - [sina_programer](https://t.me/sina_programer) in telegram (when texting, please mention that you are coming from GitHub)
