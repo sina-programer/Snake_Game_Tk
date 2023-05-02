@@ -19,6 +19,8 @@ class App:
         self.menus = {}
         self.delay = None
         self._pause = True
+        self._game_loop = True  # break the main loop by this parameter
+        self.guide_text_id = None
 
         self.login_frame = frames.LoginFrame(self.master)
         self.game_frame = frames.GameFrame(self.master)
@@ -43,7 +45,6 @@ class App:
         self.menus['main'].entryconfig('Setting', state=tk.DISABLED)
         self.menus['main'].entryconfig('About us', state=tk.DISABLED)
 
-        self.guide_text_id = self.game_frame.canvas.create_text(meta.CANVAS_WIDTH//2, meta.CANVAS_HEIGHT//2 - (meta.UNIT_SIZE*2), text='Press <enter> to start the game', font=meta.FONTS['medium'])
         self.master.mainloop()
 
     @property
@@ -97,9 +98,16 @@ class App:
 
         return root
 
+    def create_guide_text(self):
+        return self.game_frame.canvas.create_text(
+            meta.CANVAS_WIDTH//2,
+            meta.CANVAS_HEIGHT//2 - (meta.UNIT_SIZE*3),
+            text='Press <enter> to start the game',
+            font=meta.FONTS['medium']
+        )
+
     def signin(self):
         if self.login_frame.signin_frame.signin(app=self):
-            self.master.bind('<Return>', lambda _: self.start())
             self.master.bind("<Control-i>", lambda event: dialogs.SigninDialog(self))
             self.master.bind("<Control-u>", lambda event: dialogs.SignupDialog(self))
 
@@ -118,11 +126,22 @@ class App:
         if self.score > self.best_score:
             self.best_score = self.score
 
+        self._game_loop = False
+        self.master.bind('<Return>', lambda _: self.start())
+        self.guide_text_id = self.create_guide_text()
         self.energy = meta.BASE_ENERGY
         self.score = 0
         self.snake.reset()
         self.bait.reset()
         self._pause = True
+
+    def start(self):
+        self.game_frame.canvas.delete(self.guide_text_id)
+        self.master.unbind('<Return>')
+        self.snake.set_direction('up')
+        self._game_loop = True
+        self._pause = False
+        self.game_loop()
 
     def change_user(self, user):
         self.user = user
@@ -191,13 +210,6 @@ class App:
             self.change_user(meta.default_user)
             messagebox.showinfo(meta.TITLE, 'Your account has deleted successfully!')
 
-    def start(self):
-        self.game_frame.canvas.delete(self.guide_text_id)
-        self.master.unbind('<Return>')
-        self.snake.set_direction('up')
-        self._pause = False
-        self.game_loop()
-
     def game_loop(self):
         if not self._pause:
             self.check_eating_bait()
@@ -207,7 +219,8 @@ class App:
             self.bait.auto_move()
             self.game_frame.update()
 
-        self.master.after(self.delay, self.game_loop)
+        if self._game_loop:
+            self.master.after(self.delay, self.game_loop)
 
     def pause(self):
         self._pause = not self._pause
