@@ -99,6 +99,9 @@ class App:
         return root
 
     def create_guide_text(self):
+        if self.guide_text_id:
+            self.game_frame.canvas.delete(self.guide_text_id)
+
         return self.game_frame.canvas.create_text(
             meta.CANVAS_WIDTH//2,
             meta.CANVAS_HEIGHT//2 - (meta.UNIT_SIZE*3),

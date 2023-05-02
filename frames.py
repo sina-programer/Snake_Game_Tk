@@ -330,13 +330,12 @@ class TableFrame(tk.Frame, ABC):
         self.sheet = tksheet.Sheet(self, headers=self.header)
         self.sheet.hide(canvas='x_scrollbar')
         self.sheet.align('center')
-        self.sheet.grid()
         self.sheet.enable_bindings()
         self.sheet.disable_bindings(meta.UNWANTED_BINDINGS)
+        self.sheet.pack()
 
     def load(self, *args, **kwargs):
-        for row in self.fetch_data(*args, **kwargs):
-            self.sheet.insert_row(row)
+        self.sheet.insert_rows(self.fetch_data(*args, **kwargs))
 
     @property
     @abstractmethod
@@ -352,12 +351,8 @@ class BestScoresTable(TableFrame):
     @classmethod
     def fetch_data(cls, level=2):
         rows = []
-        scores = Score.select().where(Score.level == level).order_by(Score.score.desc())
-        for counter, score in enumerate(scores, 1):
+        for score in Score.select().where(Score.level == level).order_by(Score.score.desc()):
             rows.append([score.user.username, score.score, score.datetime.date()])
-
-            if counter >= meta.BEST_SCORES_LIMIT:
-                break
 
         return rows
 
@@ -368,15 +363,14 @@ class MyScoresTable(TableFrame):
     @classmethod
     def fetch_data(cls, user=meta.default_user):
         rows = []
-        for score in Score.select().where(Score.level == Config.fetch(user=user, label='Level'),
-                                          Score.user == user).order_by(Score.score.desc()):
+        for score in Score.select().where(Score.level == Config.fetch(user=user, label='Level'), Score.user == user).order_by(Score.score.desc()):
             rows.append([score.score, score.datetime.date(), score.datetime.time().strftime('%H:%M:%S')])
 
         return rows
 
 
 class RecordsTable(TableFrame):
-    header = ['Level', 'Your Record', 'Record']
+    header = ['Level', 'Your Record', 'Global Record']
 
     @classmethod
     def fetch_data(cls, user=meta.default_user):
