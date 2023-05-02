@@ -10,21 +10,34 @@
 
 ## About the Program:
 This is snake game with Tkinter in python! <br>
-in this game you can create accounts & save scores, personalization,... individually with other accounts <br>
-you can play in 3 level, it's up to your power 🙂 <br>
+in this game you can do create accounts, save scores, personalize, etc. individually from other accounts <br>
+you can play in 3 level, it's up to you 🙂 <br> <br>
+**Please communicate with us & share your experiences, ideas and whatever else you have**
 
 ### Features:
-- Personalization
-- Sign in & sign up 
+- The energy is required for moving the snake
 - Save the scores for each level & user individually
-- The energy required for moving
-- Managable accounts
+- Database is located at a secure place & also is unique (no matter where you run the game, always uses the same database)
+- All the passwords are saved as hash
+- Separate frames for login & game
+- A variety of tables
+  - my scores
+  - best scores
+  - records
+- Manageable accounts
+  - change username/password
+  - reset all scores
+  - delete account entirely
+- Personalize your accounts
+  - snake head/body color
+  - background color
 
 ### Requirements:
-- Peewee `pip install peewee`
+- peewee `pip install peewee`
 
 ### Preview:
-![preview](/Files/preview.png)
+![Login Preview](preview1.png "Login Frame")
+![Game Preview](preview2.png "Game Frame")
 
 ## Reach Me:
 - [sina_programer](https://t.me/sina_programer) in telegram (when texting, please mention that you are coming from GitHub)
