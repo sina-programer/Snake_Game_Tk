@@ -34,6 +34,7 @@ you can play in 3 level, it's up to you 🙂 <br> <br>
 
 ### Requirements:
 - peewee `pip install peewee`
+- tksheet `pip install tksheet`
 
 ### Preview:
 <img alt="Login Preview" src="preview1.png" title="Login Frame" width="45%"/> <img alt="Game Preview" src="preview2.png" title="Game Frame" width="45%"/>
