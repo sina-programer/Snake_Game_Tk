@@ -16,13 +16,15 @@ def beep():
 class BaseDialog(simpledialog.Dialog):
     def __init__(self, app, title):
         self.app = app
+        self.pause = self.app._pause
         self.app._pause = True
 
         super().__init__(self.app.master, title)
 
     def destroy(self):
         self.forget(self)
-        self.app._pause = False
+        if not self.pause:
+            self.app._pause = False
 
     def buttonbox(self):
         pass
