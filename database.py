@@ -2,10 +2,15 @@ import peewee as pw
 import os
 
 
-database_name = 'database.db'
-database_path = os.path.expanduser(rf'~\.SnakeTk\{database_name}')
+db_name = 'database.db'
+db_directory = '.SnakeTk'
+db_path = os.path.expanduser(rf'~\{db_directory}\{db_name}')
+db_parent_dir = os.path.dirname(db_path)
 
-db = pw.SqliteDatabase(database_path)
+if not os.path.exists(db_parent_dir):
+	os.mkdir(db_parent_dir)
+
+db = pw.SqliteDatabase(db_path)
 db.connect()
 
 
